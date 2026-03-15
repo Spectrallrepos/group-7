@@ -60,6 +60,41 @@ You can find your team here: [ View Teams](./TEAMS.md)
 4. Add a `README.md` using the [Submission Template](./SUBMISSION_TEMPLATE.md).
 5. Open a **Pull Request (PR)** to the `main` branch.
 
+---
+
+## Detailed Scoring Breakdown (100 Points)
+
+### 1. Technical Implementation — 35 Points
+| Criteria | Points |
+|---|---|
+| Data pipeline & preprocessing | 10 |
+| Feature engineering quality | 10 |
+| ML model performance & prediction accuracy | 10 |
+| Model export & frontend inference integration | 5 |
+
+### 2. User Experience & UI — 25 Points
+| Criteria | Points |
+|---|---|
+| Dashboard design & responsiveness | 10 |
+| Data visualization & charts | 5 |
+| Usability & interaction flow | 5 |
+| Performance & API handling | 5 |
+
+### 3. Innovation & Originality — 20 Points
+| Criteria | Points |
+|---|---|
+| Unique features beyond baseline | 10 |
+| Creative visualization or metrics | 5 |
+| Explanation of AI predictions | 5 |
+
+### 4. Final Presentation — 20 Points
+| Criteria | Points |
+|---|---|
+| Clarity of explanation | 5 |
+| Understanding of technical choices | 5 |
+| Demo quality | 5 |
+| Ability to answer questions | 5 |
+---
 ## Important Dates
 
 | Event | Date | Time |
