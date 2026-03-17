@@ -1,0 +1,35 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+header {
+    display: flex;
+    justify-content:space-between;
+    margin: 0;
+    padding: 20px 16px;
+}
+
+/* Top 4 tokens  */
+.topTokens {
+    display: flex;
+    justify-content: space-around;
+    overflow-x: auto;
+    gap: 12px;
+    @media (max-width: 620px) {
+        gap: 20px;
+    }
+}
+
+/* The chart and confidence meter */
+.chartSection {
+    @media (max-width: 850px) {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0px 40px;
+        & .chartContainer, & .confidenceMeter {
+            flex: 1;
+            width: 100%;
+        }
+    }
+}

@@ -1,0 +1,166 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: hsl(231, 22%, 12%);
+    color: white;
+}
+
+/*** Header ***/
+header {
+    border-bottom: hsl(0,0%, 48%) 0.5px solid;
+    position: sticky;
+    top: 0px;
+    /* Logo part */
+    & .logo {
+        display: flex;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        img {
+            height: 32px;
+        }
+        p {
+            margin: 0;
+            color: hsl(0, 0%, 80%);
+            font-family: 'Instrument Serif', serif;
+        }
+        /* Hides text on small screens */
+        @media (max-width: 640px) {
+            p {
+                display: none;
+            }
+        }
+    }
+    /* Search bar */
+    & form{
+        display: flex;
+        margin: 0 20px;
+        width: 50%;
+        @media (max-width: 640px) {
+            width: 100%;
+            display: none;
+        }
+        & input {
+            width: 100%;
+            font-size: 16px;
+            padding: 12px;
+            padding-left: 28px;
+            border: hsl(0,0%, 48%) 0.5px solid;
+            color: hsl(0, 0%, 80%);
+            border-right:none;
+            border-top-left-radius: 24px;
+            border-bottom-left-radius: 24px;
+            background-color: hsla(231, 22%, 28%, 0.600);
+            outline: none;
+        }
+        & button {
+            display: flex;
+            align-items: center;
+            background-color: hsla(231, 22%, 28%, 0.600);
+            color: hsl(0, 0%, 40%);
+            border: hsl(0,0%, 48%) 0.5px solid;
+            border-left: none;
+            border-top-right-radius: 24px;
+            border-bottom-right-radius: 24px;
+            padding: 12px;
+            padding-right: 28px;
+            cursor: pointer;
+            img {
+                height: 20px;
+            }
+        }
+        @media (max-width: 640px) {
+            & input {
+                padding-left: 12px;
+            }
+            & button {
+                padding-right: 12px;
+            }
+        }
+    }
+    & .buttons {
+        display: flex;
+        gap: 8px;
+        & #random, & #themeToggle, & #searchToggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: hsl(231, 22%, 64%);
+            color: hsl(0, 0%, 8%);
+            border: hsl(0,0%, 48%) 0.5px solid;
+            border-radius: 24px;
+            padding: 12px;
+            cursor: pointer;
+            img {
+                height: 20px;
+                margin: 0;
+                padding: 0;
+            }
+            p {
+                margin: 0;
+                padding: 0;
+                font-size: 14px;
+            }
+            &:hover {
+                background-color: hsl(231, 22%, 80%);
+            }
+            @media (max-width: 640px) {
+                p {
+                    display: none;
+                }
+            }
+        }
+        & #searchToggle {
+            background-color: hsl(231, 22%, 28%);
+            color: hsl(0, 0%, 80%);
+            margin: 0;
+            margin-left: 12px;
+            &:hover {
+                background-color: hsl(231, 22%, 40%);
+            }
+            @media (min-width: 640px) {
+                display: none;
+            }
+        }
+    }
+}
+
+/* Top 4 tokens */
+.topTokens {
+    margin: 20px 0;
+    padding: 8px 16px;
+    & .cards{
+        background: linear-gradient(135deg, hsla(231, 22%, 28%), hsla(231, 22%, 14%, 0.600));
+        border: hsl(0,0%, 48%) 0.5px solid;
+        border-radius: 24px;
+        padding: 16px;
+        flex-grow: 1;
+        min-width: 160px;
+        max-width: 24%;
+    }
+}
+
+/* The chart and confidence meter */
+.chartSection {
+    display: flex;
+    gap:16px;
+    margin: 20px 0;
+    padding: 8px 16px;
+    height: calc(100vh - 320px);
+    & .chartContainer {
+        background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
+        border: hsl(0,0%, 48%) 0.5px solid;
+        border-radius: 24px;
+        padding: 16px;
+        flex-grow: 4;
+    }
+    & .confidenceMeter {
+        background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
+        border: hsl(0,0%, 48%) 0.5px solid;
+        flex-grow: 1;
+        border-radius: 24px;
+        padding: 16px;
+        width: 200px;
+    }
+}

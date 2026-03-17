@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tokenTrend</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="icon" href="favicon.ico">
+    <!-- fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- The header -->
+    <header>
+        <div class="logo">
+            <img src="moon.png" alt="Token Trend Logo">
+            <p>Token Trend</p>
+        </div>
+        <form>
+            <input type="text" placeholder="Search">
+            <button type="submit"><img src="moon.png" alt="Search Icon"></button>
+        </form>
+        <div class="buttons">
+            <button id="searchToggle" type="button">
+                <img src="moon.png" alt="Theme Toggle Icon">
+            </button>
+            <button id="themeToggle" type="button">
+                <img src="moon.png" alt="Theme Toggle Icon">
+            </button>
+            <button id = "random">
+                <img src="moon.png" alt="Random Icon">
+                <p>Random</p>
+            </button>
+        </div>
+    </header>
+
+    <!-- Top 4 Tokens -->
+    <div class="topTokens">
+        <!-- The tokens can be appended by slicing the top 4 from the API -->
+        <!-- Will do after processing the API -->
+        <div class="cards">
+            <div class="card-header">
+                <img src="btc-logo.png" alt="BTC" class="token-icon">
+                <span class="ticker">BTC</span>
+            </div>
+            <div class="price-section">
+                <h3 class="current-price">$64,231.50</h3>
+                <span class="change positive">+2.4%</span>
+            </div>
+        </div>
+        <div class="cards">
+            <div class="card-header">
+                <img src="eth-logo.png" alt="ETH" class="token-icon">
+                <span class="ticker">ETH</span>
+            </div>
+            <div class="price-section">
+                <h3 class="current-price">$3,456.78</h3>
+                <span class="change negative">-1.2%</span>
+            </div>
+        </div>
+        <div class="cards">
+            <div class="card-header">
+                <img src="sol-logo.png" alt="SOL" class="token-icon">
+                <span class="ticker">SOL</span>
+            </div>
+            <div class="price-section">
+                <h3 class="current-price">$145.67</h3>
+                <span class="change positive">+3.1%</span>
+            </div>
+        </div>
+        <div class="cards">
+            <div class="card-header">
+                <img src="ada-logo.png" alt="ADA" class="token-icon">
+                <span class="ticker">ADA</span>
+            </div>
+            <div class="price-section">
+                <h3 class="current-price">$0.45</h3>
+                <span class="change positive">+0.8%</span>
+            </div>
+        </div>
+    </div>
+    <!-- The chart and confidence meter -->
+    <div class="chartSection">
+        <div class="chartContainer">
+            <canvas id="price-chart"></canvas>
+        </div>
+        <div class="confidenceMeter">
+            <p id="predict">UP</p>
+            <div class="meter"></div>
+            <p>75% Confidence</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="predict.js"></script>
+</body>
+</html>
