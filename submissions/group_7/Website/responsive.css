@@ -22,14 +22,74 @@ header {
 
 /* The chart and confidence meter */
 .chartSection {
-    @media (max-width: 850px) {
+    height: calc(100vh - 340px);
+    .confidenceMeter {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+}
+@media (max-width: 850px) {
+    .chartSection {
+        display: flex;
         flex-direction: column-reverse;
         justify-content: flex-start;
         align-items: center;
         padding: 0px 40px;
-        & .chartContainer, & .confidenceMeter {
-            flex: 1;
-            width: 100%;
-        }
+        height: auto;
+    }
+    .chartSection .chartContainer{
+        flex: 1;
+        min-width: 100%;
+        margin: 0 20px;
+        height: auto;
+        min-height: 240px;
+    }
+    .chartSection .confidenceMeter {
+        display: flex;
+        min-width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        height: auto;
+        min-height: 200px;
+        position: relative;
+    }
+    .chartSection .confidenceMeter .meter {
+        width: 10%;
+        height: 92%;
+        position: absolute;
+        right: 8px;
+    }
+}
+@media (max-height: 1200px) {
+    .chartSection .chartContainer, 
+    .chartSection .confidenceMeter {
+        height: auto;
+        min-height: 200px;
+    }
+}
+
+/* Features section */
+.contribution {
+    display: flex;
+    padding: 8px 24px;
+    padding-bottom: 20px;
+    overflow-x: auto;
+    gap: 12px;
+}
+@media (max-width: 640px) {
+    .contribution {
+        align-items: center;
+        justify-content: space-around;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+}
+.cards {
+    min-width: 160px;
+    @media (max-width: 640px) {
+        min-width: 32%;
+        max-width: 50%;
     }
 }

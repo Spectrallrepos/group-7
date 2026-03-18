@@ -24,6 +24,7 @@
             <button type="submit"><img src="moon.png" alt="Search Icon"></button>
         </form>
         <div class="buttons">
+        <!-- Search toggle exists for mobile view -->
             <button id="searchToggle" type="button">
                 <img src="moon.png" alt="Theme Toggle Icon">
             </button>
@@ -41,8 +42,8 @@
     <div class="topTokens">
         <!-- The tokens can be appended by slicing the top 4 from the API -->
         <!-- Will do after processing the API -->
-        <div class="cards">
-            <div class="card-header">
+        <div class="cards" style="border: var(--c-color-green) 2px solid;">
+            <div class="card-header" style="border: var">
                 <img src="btc-logo.png" alt="BTC" class="token-icon">
                 <span class="ticker">BTC</span>
             </div>
@@ -51,7 +52,7 @@
                 <span class="change positive">+2.4%</span>
             </div>
         </div>
-        <div class="cards">
+        <div class="cards" style="border: var(--c-color-red) 2px solid;">
             <div class="card-header">
                 <img src="eth-logo.png" alt="ETH" class="token-icon">
                 <span class="ticker">ETH</span>
@@ -61,7 +62,7 @@
                 <span class="change negative">-1.2%</span>
             </div>
         </div>
-        <div class="cards">
+        <div class="cards" style="border: var(--c-color-green) 2px solid;">
             <div class="card-header">
                 <img src="sol-logo.png" alt="SOL" class="token-icon">
                 <span class="ticker">SOL</span>
@@ -71,7 +72,7 @@
                 <span class="change positive">+3.1%</span>
             </div>
         </div>
-        <div class="cards">
+        <div class="cards" style="border: var(--c-color-green) 2px solid;">
             <div class="card-header">
                 <img src="ada-logo.png" alt="ADA" class="token-icon">
                 <span class="ticker">ADA</span>
@@ -88,11 +89,120 @@
             <canvas id="price-chart"></canvas>
         </div>
         <div class="confidenceMeter">
-            <p id="predict">UP</p>
-            <div class="meter"></div>
-            <p>75% Confidence</p>
+            <div class="confidenceTxt">
+                <h1>Prediction for tomorrow</h1>
+                <h2>UP</h2>
+                <p>Confidence: 85%</p>
+                <div class="extraInfo">
+                    <p>last 24h: +2.4%</p>
+                    <p>last 7d: +5.6%</p>
+                    <p>last idk</p>
+                </div>
+            </div>
+            <div class="meter">
+                <span class="fill" style="height: 64%"></span>
+            </div>
         </div>
     </div>
+
+    <!-- Contribution of each feature -->
+    <h1 id="contTitle">Top features that drove today's prediction</h1>
+    <div class="contribution">
+        <div class="cards">
+            <h3>Volume</h3>
+            <div class="meter">
+                <span class="fill" style="width: 85%;"></span>
+            </div>
+        </div>
+        <div class="cards">
+            <h3>Market Cap</h3>
+            <div class="meter">
+                <span class="fill" style="width: 60%;"></span>
+            </div>
+        </div>
+        <div class="cards">
+            <h3>RSI</h3>
+            <div class="meter">
+                <span class="fill" style="width: 45%;"></span>
+            </div>
+        </div>
+        <div class="cards">
+            <h3>7-Day MA</h3>
+            <div class="meter">
+                <span class="fill" style="width: 30%;"></span>
+            </div>
+        </div>
+        <div class="cards">
+            <h3>Market Cap</h3>
+            <div class="meter">
+                <span class="fill" style="width: 85%;"></span>
+            </div>
+        </div>
+        <div class="cards">
+            <h3>Others</h3>
+            <div class="meter">
+                <span class="fill" style="width: 85%;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Token table, every day forecast -->
+    <table>
+        <thead>
+            <tr>
+                <th>Token</th>
+                <th>Price</th>
+                <th>Volume(24h)</th>
+                <th>Market cap</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will be populated by script -->
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+            <tr>
+                <td>BTC</td>
+                <td>$64,231.50</td>
+                <td>$36B</td>
+                <td>$1.2T</td>
+            </tr>
+        </tbody>
+    </table>
+
     <script src="script.js"></script>
     <script src="predict.js"></script>
 </body>

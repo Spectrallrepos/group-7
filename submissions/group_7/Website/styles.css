@@ -1,128 +1,164 @@
 body {
     font-family: Arial, sans-serif;
     background-color: hsl(231, 22%, 12%);
-    color: white;
+    color: var(--c-color-textMuted);
+    --c-color-bgDark: hsl(231, 22%, 12%);
+    --c-color-bgLight: hsl(231, 22%, 28%);
+    --c-color-border: hsl(0,0%, 48%);
+    --c-color-textPrimary: hsl(0, 0%, 90%);
+    --c-color-textMuted: hsl(0, 0%, 72%);
+    --c-color-green: hsl(157, 80%, 43%);
+    --c-color-green2: hsl(157, 80%, 25%);
+    --c-color-red: hsl(357, 81%, 57%);
+    --c-color-red2: hsl(356, 81%, 33%);
 }
 
 /*** Header ***/
 header {
-    border-bottom: hsl(0,0%, 48%) 0.5px solid;
+    border-bottom: var(--c-color-border) 0.5px solid;
     position: sticky;
     top: 0px;
-    /* Logo part */
-    & .logo {
-        display: flex;
-        align-items: center;
-        font-size: 24px;
-        font-weight: bold;
-        margin: 0;
-        padding: 0;
-        img {
-            height: 32px;
-        }
-        p {
-            margin: 0;
-            color: hsl(0, 0%, 80%);
-            font-family: 'Instrument Serif', serif;
-        }
-        /* Hides text on small screens */
-        @media (max-width: 640px) {
-            p {
-                display: none;
-            }
-        }
+    z-index: 100;
+    background-color: var(--c-color-bgDark);
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Logo part */
+header .logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+    min-width: 160px;
+}
+
+header .logo img {
+    height: 32px;
+}
+
+header .logo p {
+    margin: 0;
+    color: var(--c-color-textPrimary);
+    font-family: 'Instrument Serif', serif;
+}
+
+@media (max-width: 640px) {
+    header .logo p {
+        display: none;
     }
-    /* Search bar */
-    & form{
-        display: flex;
-        margin: 0 20px;
-        width: 50%;
-        @media (max-width: 640px) {
-            width: 100%;
-            display: none;
-        }
-        & input {
-            width: 100%;
-            font-size: 16px;
-            padding: 12px;
-            padding-left: 28px;
-            border: hsl(0,0%, 48%) 0.5px solid;
-            color: hsl(0, 0%, 80%);
-            border-right:none;
-            border-top-left-radius: 24px;
-            border-bottom-left-radius: 24px;
-            background-color: hsla(231, 22%, 28%, 0.600);
-            outline: none;
-        }
-        & button {
-            display: flex;
-            align-items: center;
-            background-color: hsla(231, 22%, 28%, 0.600);
-            color: hsl(0, 0%, 40%);
-            border: hsl(0,0%, 48%) 0.5px solid;
-            border-left: none;
-            border-top-right-radius: 24px;
-            border-bottom-right-radius: 24px;
-            padding: 12px;
-            padding-right: 28px;
-            cursor: pointer;
-            img {
-                height: 20px;
-            }
-        }
-        @media (max-width: 640px) {
-            & input {
-                padding-left: 12px;
-            }
-            & button {
-                padding-right: 12px;
-            }
-        }
+}
+
+/* Search bar */
+header form {
+    display: flex;
+    margin: 0 20px;
+    width: 50%;
+}
+
+@media (max-width: 640px) {
+    header form {
+        width: 100%;
+        display: none;
     }
-    & .buttons {
-        display: flex;
-        gap: 8px;
-        & #random, & #themeToggle, & #searchToggle {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background-color: hsl(231, 22%, 64%);
-            color: hsl(0, 0%, 8%);
-            border: hsl(0,0%, 48%) 0.5px solid;
-            border-radius: 24px;
-            padding: 12px;
-            cursor: pointer;
-            img {
-                height: 20px;
-                margin: 0;
-                padding: 0;
-            }
-            p {
-                margin: 0;
-                padding: 0;
-                font-size: 14px;
-            }
-            &:hover {
-                background-color: hsl(231, 22%, 80%);
-            }
-            @media (max-width: 640px) {
-                p {
-                    display: none;
-                }
-            }
-        }
-        & #searchToggle {
-            background-color: hsl(231, 22%, 28%);
-            color: hsl(0, 0%, 80%);
-            margin: 0;
-            margin-left: 12px;
-            &:hover {
-                background-color: hsl(231, 22%, 40%);
-            }
-            @media (min-width: 640px) {
-                display: none;
-            }
-        }
+}
+
+header form input {
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    padding-left: 28px;
+    background-color: hsla(231, 22%, 28%, 0.600);
+    border: var(--c-color-border) 0.5px solid;
+    color: var(--c-color-textPrimary);
+    border-right: none;
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 24px;
+    outline: none;
+}
+
+header form button {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    padding-right: 28px;
+    background-color: hsla(231, 22%, 28%, 0.600);
+    color: var(--c-color-textMuted);
+    border: var(--c-color-border) 0.5px solid;
+    border-left: none;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    cursor: pointer;
+}
+
+header form button img {
+    height: 20px;
+}
+
+header .buttons {
+    display: flex;
+    gap: 8px;
+}
+
+header #random,
+header #themeToggle,
+header #searchToggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: hsl(231, 22%, 64%);
+    color: hsl(0, 0%, 8%);
+    border: var(--c-color-border) 0.5px solid;
+    border-radius: 24px;
+    padding: 12px;
+    cursor: pointer;
+}
+
+header #random img,
+header #themeToggle img,
+header #searchToggle img {
+    height: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+header #random p,
+header #themeToggle p,
+header #searchToggle p {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+}
+
+header #random:hover,
+header #themeToggle:hover {
+    background-color: hsl(231, 22%, 80%);
+}
+
+@media (max-width: 640px) {
+    header #random p,
+    header #themeToggle p,
+    header #searchToggle p {
+        display: none;
+    }
+}
+
+header #searchToggle {
+    background-color: hsl(231, 22%, 28%);
+    color: var(--c-color-textPrimary);
+    margin: 0;
+    margin-left: 12px;
+}
+
+header #searchToggle:hover {
+    background-color: hsl(231, 22%, 40%);
+}
+
+@media (min-width: 640px) {
+    header #searchToggle {
+        display: none;
     }
 }
 
@@ -130,37 +166,200 @@ header {
 .topTokens {
     margin: 20px 0;
     padding: 8px 16px;
-    & .cards{
-        background: linear-gradient(135deg, hsla(231, 22%, 28%), hsla(231, 22%, 14%, 0.600));
-        border: hsl(0,0%, 48%) 0.5px solid;
-        border-radius: 24px;
-        padding: 16px;
-        flex-grow: 1;
-        min-width: 160px;
-        max-width: 24%;
-    }
+}
+
+.cards {
+    background: linear-gradient(135deg, hsla(231, 22%, 28%), hsla(231, 22%, 14%, 0.600));
+    border-radius: 24px;
+    padding: 16px;
+    flex-grow: 1;
+    min-width: 160px;
+    max-width: 24%;
+    transition: background 0.3s ease;
+}
+
+.cards:hover {
+    background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%));
+    transform: translateY(-4px) scale(1.02);
+    transition: background 0.5s ease, transform 0.3s ease;
+    box-shadow: 0 4px 12px var(--c-color-green2);
+}
+
+/* Common style for all meters, width and color can directly be changed in html via js*/
+.meter {
+    background-color: hsl(240, 9%, 12%);
+    position: relative;
+    border-radius: 16px;
+    align-self: center;
+    width: 100%;
+    height: 12px;
+    overflow: hidden;
+}
+
+.meter .fill {
+    background-color: var(--c-color-green);
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    display: block;
 }
 
 /* The chart and confidence meter */
 .chartSection {
     display: flex;
-    gap:16px;
-    margin: 20px 0;
+    gap: 24px;
+    margin: 20px 10px;
     padding: 8px 16px;
     height: calc(100vh - 320px);
-    & .chartContainer {
-        background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
-        border: hsl(0,0%, 48%) 0.5px solid;
-        border-radius: 24px;
-        padding: 16px;
-        flex-grow: 4;
-    }
-    & .confidenceMeter {
-        background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
-        border: hsl(0,0%, 48%) 0.5px solid;
-        flex-grow: 1;
-        border-radius: 24px;
-        padding: 16px;
-        width: 200px;
-    }
+}
+
+.chartSection .chartContainer {
+    max-height: calc(100vh - 340px);
+    background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
+    border: var(--c-color-border) 0.5px solid;
+    border-left: var(--c-color-green) 16px solid;
+    border-radius: 24px;
+    padding: 16px;
+    flex-grow: 2;
+    max-width: 60%;
+}
+
+.chartSection #price-chart {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.chartSection .confidenceMeter {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
+    border: var(--c-color-border) 0.5px solid;
+    flex-grow: 1;
+    border-radius: 24px;
+    padding: 16px;
+    width: 200px;
+    max-height: calc(100vh - 340px);
+}
+
+.chartSection .confidenceMeter .confidenceTxt {
+    display: flex;
+    flex-direction: column;
+    align-items: space-around;
+    gap: 10px;
+    min-width: 130px;
+}
+
+.chartSection .confidenceMeter .confidenceTxt h1 {
+    margin: 0;
+    font-size: 24px;
+    font-family: 'Instrument Serif', serif;
+    color: var(--c-color-textPrimary);
+}
+
+.chartSection .confidenceMeter .confidenceTxt h2 {
+    margin: 0;
+    width: 100%;
+    font-size: 52px;
+    padding: 0;
+    color: var(--c-color-green);
+    text-shadow:
+        0 0 6px hsla(157, 80%, 43%, 0.75),
+        0 0 14px hsla(157, 80%, 43%, 0.55),
+        0 0 26px hsla(157, 80%, 43%, 0.35);
+}
+
+.chartSection .confidenceMeter .confidenceTxt p {
+    margin: 0;
+    padding: 0;
+    font-size: 32px;
+    font-family: 'Instrument Serif', serif;
+    color: var(--c-color-green);
+    text-shadow:
+        0 0 6px hsla(157, 80%, 43%, 0.75),
+        0 0 14px hsla(157, 80%, 43%, 0.55),
+        0 0 26px hsla(157, 80%, 43%, 0.35);
+}
+
+.chartSection .confidenceMeter .confidenceTxt .extraInfo {
+    margin-top: auto;
+}
+
+.chartSection .confidenceMeter .confidenceTxt .extraInfo p {
+    font-size: 24px;
+    color: var(--c-color-textMuted);
+    text-shadow: none;
+}
+
+.chartSection .confidenceMeter .meter {
+    height: 92%;
+    max-width: 52px;
+}
+
+.chartSection .confidenceMeter .meter .fill {
+    width: 100%;
+    bottom: 0;
+    top: auto;
+    background: linear-gradient(180deg, hsl(157, 80%, 55%), hsl(157, 80%, 35%));
+    box-shadow:
+        0 0 8px hsla(157, 80%, 43%, 0.6),
+        0 0 18px hsla(157, 80%, 43%, 0.4),
+        inset 0 0 8px hsla(157, 80%, 90%, 0.25);
+}
+
+/* Features section */
+#contTitle {
+    margin: 0;
+    margin-left: 16px;
+    margin-top: 52px;
+    padding: 0;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Instrument Serif', serif;
+}
+
+.bar {
+    display: block;
+    background-color: var(--c-color-red);
+    border-radius: 8px;
+    height: 24px;
+}
+
+.contribution {
+    display: flex;
+    padding: 8px 24px;
+    padding-bottom: 20px;
+    overflow-x: auto;
+    gap: 12px;
+}
+
+.contribution .cards {
+    border: var(--c-color-border) 0.5px solid;
+}
+
+.contribution .cards:hover {
+    box-shadow: none;
+    transform: none;
+    background: linear-gradient(135deg, hsla(231, 22%, 28%), hsla(231, 22%, 14%, 0.600));
+}
+
+/* Table of tokens */
+table {
+    width: 96%;
+    position: relative;
+    transform: translateX(2%);
+    border-collapse: collapse;
+    gap: 0;
+    margin: 20px 0px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: var(--c-color-border) 0.5px solid;
+}
+
+th {
+    background-color: hsla(231, 22%, 28%, 0.600);
 }
