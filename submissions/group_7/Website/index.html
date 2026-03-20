@@ -15,11 +15,11 @@
 <body>
     <!-- The header -->
     <header>
-        <div class="logo">
+        <div id="logo", class="head">
             <img src="moon.png" alt="Token Trend Logo">
             <p>Token Trend</p>
         </div>
-        <form>
+        <form id="searchForm", class="head">
             <input type="text" placeholder="Search">
             <button type="submit"><img src="moon.png" alt="Search Icon"></button>
         </form>
@@ -28,10 +28,10 @@
             <button id="searchToggle" type="button">
                 <img src="moon.png" alt="Theme Toggle Icon">
             </button>
-            <button id="themeToggle" type="button">
+            <button id="themeToggle" type="button", class="head">
                 <img src="moon.png" alt="Theme Toggle Icon">
             </button>
-            <button id = "random">
+            <button id = "random", class="head" type="button">
                 <img src="moon.png" alt="Random Icon">
                 <p>Random</p>
             </button>
@@ -59,7 +59,7 @@
             </div>
             <div class="price-section">
                 <h3 class="current-price">$3,456.78</h3>
-                <span class="change negative">-1.2%</span>
+                <span class="changeNegative">-1.2%</span>
             </div>
         </div>
         <div class="cards" style="border: var(--c-color-green) 2px solid;">
@@ -69,13 +69,13 @@
             </div>
             <div class="price-section">
                 <h3 class="current-price">$145.67</h3>
-                <span class="change positive">+3.1%</span>
+                <span class="change">+3.1%</span>
             </div>
         </div>
         <div class="cards" style="border: var(--c-color-green) 2px solid;">
             <div class="card-header">
                 <img src="ada-logo.png" alt="ADA" class="token-icon">
-                <span class="ticker">ADA</span>
+                <span class="change">ADA</span>
             </div>
             <div class="price-section">
                 <h3 class="current-price">$0.45</h3>
@@ -85,8 +85,8 @@
     </div>
     <!-- The chart and confidence meter -->
     <div class="chartSection">
-        <div class="chartContainer">
-            <canvas id="price-chart"></canvas>
+        <div class="chartContainer glow">
+            <canvas id="priceChart"></canvas>
         </div>
         <div class="confidenceMeter">
             <div class="confidenceTxt">
@@ -203,6 +203,7 @@
         </tbody>
     </table>
 
+    <script src="node_modules/chart.js/dist/chart.umd.js"></script>
     <script src="script.js"></script>
     <script src="predict.js"></script>
 </body>

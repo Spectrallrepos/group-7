@@ -8,6 +8,29 @@ header {
     margin: 0;
     padding: 20px 16px;
 }
+#logo, #searchForm, #random, #themeToggle {
+    display: flex;
+}
+.head #logo,
+.head #searchForm,
+.head #random,
+.head #themeToggle,
+.head #searchToggle {
+    display: none;
+}
+
+.head #searchForm {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+@media (max-width: 640px) {
+    #searchForm {
+        display: none;
+    }
+}
 
 /* Top 4 tokens  */
 .topTokens {
@@ -37,13 +60,13 @@ header {
         align-items: center;
         padding: 0px 40px;
         height: auto;
+        max-height: none;
     }
-    .chartSection .chartContainer{
+    .chartContainer{
         flex: 1;
         min-width: 100%;
         margin: 0 20px;
-        height: auto;
-        min-height: 240px;
+        min-height: 200px !important;
     }
     .chartSection .confidenceMeter {
         display: flex;
