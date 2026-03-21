@@ -11,6 +11,9 @@ body {
     --c-color-green2: hsl(157, 80%, 25%);
     --c-color-red: hsl(357, 81%, 57%);
     --c-color-red2: hsl(356, 81%, 33%);
+    --c-color-yellow: hsl(48, 80%, 67%);
+    --c-color-blue: hsl(199, 61%, 54%);
+    --c-color-orange: hsl(28, 80%, 52%);
 }
 
 /*** Header ***/
@@ -169,11 +172,12 @@ header #searchToggle:hover {
 }
 
 .cards {
+    --card-accent: var(--c-color-border);
     background: linear-gradient(135deg, hsla(231, 22%, 28%), hsla(231, 22%, 14%, 0.600));
     border-radius: 24px;
     padding: 16px;
     flex-grow: 1;
-    min-width: 160px;
+    min-width: 240px !important;
     max-width: 24%;
     transition: background 0.3s ease;
 }
@@ -182,7 +186,40 @@ header #searchToggle:hover {
     background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%));
     transform: translateY(-4px) scale(1.02);
     transition: background 0.5s ease, transform 0.3s ease;
-    box-shadow: 0 4px 12px var(--c-color-green2);
+    box-shadow: 0 4px 12px var(--card-accent);
+}
+.cards .card-header{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 20px;
+    color: var(--c-color-textPrimary);
+}
+.cards .card-header img {
+    height: 24px;
+    margin-right: 8px;
+}
+.cards .card-header p {
+    margin: 0;
+    font-family: Arial, serif;
+    font-size: 16px;
+    padding: 2px 8px;
+    background-color: color-mix(in srgb, var(--card-accent) 32%, transparent);
+    border-radius: 12px;
+    margin-left: auto;
+    color: var(--c-color-textMuted);
+}
+
+.cards .details_top {
+    margin: 0;
+    margin-top: 32px;
+    color: var(--c-color-textMuted);
+    font-size: 20px;
+    p {
+        margin: 0;
+        padding: 0;
+    }
 }
 
 /* Common style for all meters, width and color can directly be changed in html via js*/
@@ -211,12 +248,11 @@ header #searchToggle:hover {
     gap: 24px;
     margin: 20px 10px;
     padding: 8px 16px;
-    max-height: max(calc(100vh - 340px), 600px);
+    height: max(calc(100vh - 320px), 600px);
     min-height: 500px;
 }
 
 .chartContainer {
-    max-height: max(calc(100vh - 340px), 300px);
     background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
     border: var(--c-color-border) 0.5px solid;
     border-left: var(--c-color-green) 24px solid;
@@ -224,7 +260,6 @@ header #searchToggle:hover {
     padding: 16px;
     flex-grow: 2;
     max-width: 68%;
-    max-height: max(calc(100vh - 340px), 600px);
     min-height: 500px;
 }
 
@@ -245,7 +280,7 @@ header #searchToggle:hover {
     flex-grow: 1;
     border-radius: 24px;
     padding: 16px;
-    max-height: max(calc(100vh - 340px), 600px);
+    height: max(calc(100vh - 320px), 600px);
     min-height: 500px;
 }
 
@@ -267,7 +302,7 @@ header #searchToggle:hover {
 .chartSection .confidenceMeter .confidenceTxt h2 {
     margin: 0;
     width: 100%;
-    font-size: 52px;
+    font-size: 100px;
     padding: 0;
     color: var(--c-color-green);
     text-shadow:
@@ -358,20 +393,33 @@ header #searchToggle:hover {
     background: linear-gradient(135deg, hsla(231, 22%, 28%), hsla(231, 22%, 14%, 0.600));
 }
 
-/* Table of tokens */
+/* Table of tokens or market forecast */
+.table {
+    margin: 0;
+    padding: 8px 16px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 table {
-    width: 96%;
-    position: relative;
-    transform: translateX(2%);
     border-collapse: collapse;
-    gap: 0;
+    min-width: 900px;
     margin: 20px 0px;
+    width: 100%;
 }
 
 th, td {
     padding: 12px;
     text-align: left;
+    font-size: 16px;
+    color: var(--c-color-textPrimary);
     border-bottom: var(--c-color-border) 0.5px solid;
+}
+table td img {
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
 }
 
 th {

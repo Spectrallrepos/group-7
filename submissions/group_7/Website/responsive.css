@@ -65,12 +65,12 @@ header {
     .chartContainer{
         flex: 1;
         min-width: 100%;
-        margin: 0 20px;
-        min-height: 200px !important;
+        min-height: 200px;
     }
     .chartSection .confidenceMeter {
         display: flex;
-        min-width: 100%;
+        min-width: 104%;
+        padding: 16px;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
@@ -82,7 +82,7 @@ header {
         width: 10%;
         height: 92%;
         position: absolute;
-        right: 8px;
+        right: 16px;
     }
 }
 @media (max-height: 1200px) {

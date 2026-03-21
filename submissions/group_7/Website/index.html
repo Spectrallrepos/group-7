@@ -39,47 +39,48 @@
     </header>
 
     <!-- Top 4 Tokens -->
+    <!-- Instead of just the top 4 based on close, display top in each category -->
     <div class="topTokens">
-        <!-- The tokens can be appended by slicing the top 4 from the API -->
+        <!-- The tokens can be appended -->
         <!-- Will do after processing the API -->
-        <div class="cards" style="border: var(--c-color-green) 2px solid;">
+        <div class="cards" style="--card-accent: var(--c-color-blue); border: var(--card-accent) 2px solid;">
             <div class="card-header" style="border: var">
                 <img src="btc-logo.png" alt="BTC" class="token-icon">
                 <span class="ticker">BTC</span>
+                <p>Market Leader</p>
             </div>
-            <div class="price-section">
-                <h3 class="current-price">$64,231.50</h3>
-                <span class="change positive">+2.4%</span>
+            <div class="details_top">
+                <p>Price: $64,231.50</p>
             </div>
         </div>
-        <div class="cards" style="border: var(--c-color-red) 2px solid;">
+        <div class="cards" style="--card-accent: var(--c-color-green); border: var(--card-accent) 2px solid;">
             <div class="card-header">
                 <img src="eth-logo.png" alt="ETH" class="token-icon">
                 <span class="ticker">ETH</span>
+                <p>Top gainer</p>
             </div>
-            <div class="price-section">
-                <h3 class="current-price">$3,456.78</h3>
-                <span class="changeNegative">-1.2%</span>
+            <div class="details_top">
+                <p>24h Change: +2.4%</p>
             </div>
         </div>
-        <div class="cards" style="border: var(--c-color-green) 2px solid;">
+        <div class="cards" style="--card-accent: var(--c-color-yellow); border: var(--card-accent) 2px solid;">
             <div class="card-header">
                 <img src="sol-logo.png" alt="SOL" class="token-icon">
                 <span class="ticker">SOL</span>
+                <p>Volume leader</p>
             </div>
-            <div class="price-section">
-                <h3 class="current-price">$145.67</h3>
-                <span class="change">+3.1%</span>
+            <div class="details_top">
+                <p>MA ratio: 1.2</p>
             </div>
         </div>
-        <div class="cards" style="border: var(--c-color-green) 2px solid;">
+        <div class="cards" style="--card-accent: var(--c-color-orange); border: var(--card-accent) 2px solid;">
             <div class="card-header">
                 <img src="ada-logo.png" alt="ADA" class="token-icon">
-                <span class="change">ADA</span>
+                <span class="ticker">ADA</span>
+                <p>Under-valued?</p>
             </div>
-            <div class="price-section">
-                <h3 class="current-price">$0.45</h3>
-                <span class="change positive">+0.8%</span>
+            <div class="details_top">
+                <p>Volatility: High(1.5)</p>
             </div>
         </div>
     </div>
@@ -90,13 +91,13 @@
         </div>
         <div class="confidenceMeter">
             <div class="confidenceTxt">
-                <h1>Prediction for tomorrow</h1>
+                <h1>Bitcoin - Tomorrow's prediction</h1>
                 <h2>UP</h2>
                 <p>Confidence: 85%</p>
                 <div class="extraInfo">
                     <p>last 24h: +2.4%</p>
                     <p>last 7d: +5.6%</p>
-                    <p>last idk</p>
+                    <p>last 30d: +12.3%</p>
                 </div>
             </div>
             <div class="meter">
@@ -147,61 +148,24 @@
     </div>
 
     <!-- The Token table, every day forecast -->
-    <table>
-        <thead>
-            <tr>
-                <th>Token</th>
-                <th>Price</th>
-                <th>Volume(24h)</th>
-                <th>Market cap</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Table rows will be populated by script -->
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-            <tr>
-                <td>BTC</td>
-                <td>$64,231.50</td>
-                <td>$36B</td>
-                <td>$1.2T</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table">
+        <h1>Market forecast</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Token</th>
+                    <th>Price</th>
+                    <th>24h Change</th>
+                    <th>Market Cap</th>
+                    <th>Volume</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be populated by script -->
+            </tbody>
+        </table>
+    </div>
 
     <script src="node_modules/chart.js/dist/chart.umd.js"></script>
     <script src="script.js"></script>
