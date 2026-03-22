@@ -6,7 +6,7 @@
     <title>tokenTrend</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="responsive.css">
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" href="assets/icon.svg">
     <!-- fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,23 +16,22 @@
     <!-- The header -->
     <header>
         <div id="logo", class="head">
-            <img src="moon.png" alt="Token Trend Logo">
+            <img src="assets/icon.svg" alt="Token Trend Logo">
             <p>Token Trend</p>
         </div>
         <form id="searchForm", class="head">
             <input type="text" placeholder="Search">
-            <button type="submit"><img src="moon.png" alt="Search Icon"></button>
+            <div class="searchResults">
+            </div>
+            <button type="submit"><img src="assets/search.svg" alt="Search Icon"></button>
         </form>
         <div class="buttons">
-        <!-- Search toggle exists for mobile view -->
+        <!-- Search toggle for mobile view -->
             <button id="searchToggle" type="button">
-                <img src="moon.png" alt="Theme Toggle Icon">
-            </button>
-            <button id="themeToggle" type="button", class="head">
-                <img src="moon.png" alt="Theme Toggle Icon">
+                <img src="assets/search.svg" alt="Theme Toggle Icon">
             </button>
             <button id = "random", class="head" type="button">
-                <img src="moon.png" alt="Random Icon">
+                <img src="assets/random.svg" alt="Random Icon">
                 <p>Random</p>
             </button>
         </div>
@@ -43,44 +42,44 @@
     <div class="topTokens">
         <!-- The tokens can be appended -->
         <!-- Will do after processing the API -->
-        <div class="cards" style="--card-accent: var(--c-color-blue); border: var(--card-accent) 2px solid;">
+        <div class="cards" style="--card-accent: var(--c-color-yellow); border: var(--card-accent) 2px solid;">
             <div class="card-header" style="border: var">
-                <img src="btc-logo.png" alt="BTC" class="token-icon">
-                <span class="ticker">BTC</span>
+                <img src="" class="leader">
+                <span class="leader"></span>
                 <p>Market Leader</p>
             </div>
             <div class="details_top">
-                <p>Price: $64,231.50</p>
+                <p></p>
             </div>
         </div>
         <div class="cards" style="--card-accent: var(--c-color-green); border: var(--card-accent) 2px solid;">
             <div class="card-header">
-                <img src="eth-logo.png" alt="ETH" class="token-icon">
-                <span class="ticker">ETH</span>
+                <img src="" class="gainer">
+                <span class="gainer"></span>
                 <p>Top gainer</p>
             </div>
             <div class="details_top">
-                <p>24h Change: +2.4%</p>
+                <p></p>
             </div>
         </div>
-        <div class="cards" style="--card-accent: var(--c-color-yellow); border: var(--card-accent) 2px solid;">
+        <div class="cards" style="--card-accent: hsl(0, 0%, 90%); border: var(--card-accent) 2px solid;">
             <div class="card-header">
-                <img src="sol-logo.png" alt="SOL" class="token-icon">
-                <span class="ticker">SOL</span>
+                <img src="" class="volumeLeader">
+                <span class="volumeLeader"></span>
                 <p>Volume leader</p>
             </div>
             <div class="details_top">
-                <p>MA ratio: 1.2</p>
+                <p></p>
             </div>
         </div>
         <div class="cards" style="--card-accent: var(--c-color-orange); border: var(--card-accent) 2px solid;">
             <div class="card-header">
-                <img src="ada-logo.png" alt="ADA" class="token-icon">
-                <span class="ticker">ADA</span>
+                <img src="" class="underValued">
+                <span class="underValued"></span>
                 <p>Under-valued?</p>
             </div>
             <div class="details_top">
-                <p>Volatility: High(1.5)</p>
+                <p></p>
             </div>
         </div>
     </div>
@@ -92,8 +91,8 @@
         <div class="confidenceMeter">
             <div class="confidenceTxt">
                 <h1>Bitcoin - Tomorrow's prediction</h1>
-                <h2>UP</h2>
-                <p>Confidence: 85%</p>
+                <h2></h2>
+                <p></p>
                 <div class="extraInfo">
                     <p>last 24h: +2.4%</p>
                     <p>last 7d: +5.6%</p>
@@ -101,7 +100,7 @@
                 </div>
             </div>
             <div class="meter">
-                <span class="fill" style="height: 64%"></span>
+                <span class="fill"></span>
             </div>
         </div>
     </div>

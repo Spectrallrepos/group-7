@@ -62,10 +62,10 @@ header {
         height: auto;
         max-height: none;
     }
-    .chartContainer{
-        flex: 1;
-        min-width: 100%;
+    .chartSection .chartContainer{
         min-height: 200px;
+        max-width: 100%;
+        min-width: 100%;
     }
     .chartSection .confidenceMeter {
         display: flex;
@@ -76,6 +76,7 @@ header {
         align-items: center;
         height: auto;
         min-height: 200px;
+        max-height: none;
         position: relative;
     }
     .chartSection .confidenceMeter .meter {
@@ -89,7 +90,7 @@ header {
     .chartSection .chartContainer, 
     .chartSection .confidenceMeter {
         height: auto;
-        min-height: 200px;
+        min-height: 360px !important;
     }
 }
 
@@ -109,10 +110,9 @@ header {
         flex-wrap: wrap;
     }
 }
-.cards {
-    min-width: 160px;
-    @media (max-width: 640px) {
-        min-width: 32%;
-        max-width: 50%;
+@media (max-width: 640px) {
+    .contribution .cards {
+        min-width: 20%;
+        max-width: 40% !important;
     }
 }

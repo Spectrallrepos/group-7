@@ -39,7 +39,8 @@ header #logo {
 }
 
 header #logo img {
-    height: 32px;
+    height: 48px;
+    margin-right: 12px;
 }
 
 header #logo p {
@@ -59,6 +60,7 @@ header #logo p {
     display: flex;
     margin: 0 20px;
     width: 50%;
+    position: relative;
 }
 
 @media (max-width: 640px) {
@@ -71,28 +73,30 @@ header #logo p {
 header #searchForm input {
     width: 100%;
     font-size: 16px;
+    z-index: 20;
     padding: 12px;
     padding-left: 28px;
-    background-color: hsla(231, 22%, 28%, 0.600);
+    background-color: hsla(233, 21%, 20%);
     border: var(--c-color-border) 0.5px solid;
     color: var(--c-color-textPrimary);
     border-right: none;
-    border-top-left-radius: 24px;
-    border-bottom-left-radius: 24px;
+    border-top-left-radius: 28px;
+    border-bottom-left-radius: 28px;
     outline: none;
 }
 
 header #searchForm button {
     display: flex;
     align-items: center;
+    z-index: 20;
     padding: 12px;
-    padding-right: 28px;
-    background-color: hsla(231, 22%, 28%, 0.600);
+    padding-right: 20px;
+    background-color: hsl(233, 21%, 20%);
     color: var(--c-color-textMuted);
     border: var(--c-color-border) 0.5px solid;
     border-left: none;
-    border-top-right-radius: 24px;
-    border-bottom-right-radius: 24px;
+    border-top-right-radius: 28px;
+    border-bottom-right-radius: 28px;
     cursor: pointer;
 }
 
@@ -100,13 +104,41 @@ header #searchForm button img {
     height: 20px;
 }
 
+header .searchResults {
+    position: absolute;
+    z-index: 10;
+    margin: 0;
+    top: 48%;
+    width: calc(100% - 2px);
+    padding: 0;
+    padding-top: 24px;
+    background-color: hsla(233, 21%, 20%, 0.600);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); /* For Safari support */
+    border: var(--c-color-border) 0.5px solid;
+    border-top: none;
+    border-radius: 0 0 24px 24px;
+    display: none;
+    flex-direction: column;
+}
+.searchResults p {
+    margin: 4px;
+    line-height: 32px;
+    padding: 8px 24px;
+    color: var(--c-color-textMuted);
+    cursor: pointer
+}
+.searchResults p:hover {
+    background-color: hsla(231, 22%, 49%);
+    border-radius: 16px;
+    color: var(--c-color-textPrimary);
+}
 header .buttons {
     display: flex;
     gap: 8px;
 }
 
 header #random,
-header #themeToggle,
 header #searchToggle {
     display: flex;
     align-items: center;
@@ -114,35 +146,31 @@ header #searchToggle {
     background-color: hsl(231, 22%, 64%);
     color: hsl(0, 0%, 8%);
     border: var(--c-color-border) 0.5px solid;
-    border-radius: 24px;
+    border-radius: 28px;
     padding: 12px;
     cursor: pointer;
 }
 
 header #random img,
-header #themeToggle img,
 header #searchToggle img {
-    height: 20px;
+    height: 24px;
     margin: 0;
     padding: 0;
 }
 
 header #random p,
-header #themeToggle p,
 header #searchToggle p {
     margin: 0;
     padding: 0;
-    font-size: 14px;
+    font-size: 16px;
 }
 
-header #random:hover,
-header #themeToggle:hover {
+header #random:hover{
     background-color: hsl(231, 22%, 80%);
 }
 
 @media (max-width: 640px) {
     header #random p,
-    header #themeToggle p,
     header #searchToggle p {
         display: none;
     }
@@ -168,7 +196,7 @@ header #searchToggle:hover {
 /* Top 4 tokens */
 .topTokens {
     margin: 20px 0;
-    padding: 8px 16px;
+    padding: 16px;
 }
 
 .cards {
@@ -177,7 +205,7 @@ header #searchToggle:hover {
     border-radius: 24px;
     padding: 16px;
     flex-grow: 1;
-    min-width: 240px !important;
+    min-width: 240px;
     max-width: 24%;
     transition: background 0.3s ease;
 }
@@ -195,6 +223,9 @@ header #searchToggle:hover {
     flex-wrap: wrap;
     font-size: 20px;
     color: var(--c-color-textPrimary);
+}
+.card-header span {
+    font-size: 24px;
 }
 .cards .card-header img {
     height: 24px;
@@ -245,11 +276,13 @@ header #searchToggle:hover {
 /* The chart and confidence meter */
 .chartSection {
     display: flex;
+    max-width: 100%;
     gap: 24px;
     margin: 20px 10px;
     padding: 8px 16px;
     height: max(calc(100vh - 320px), 600px);
     min-height: 500px;
+    box-sizing: border-box;
 }
 
 .chartContainer {
@@ -258,8 +291,8 @@ header #searchToggle:hover {
     border-left: var(--c-color-green) 24px solid;
     border-radius: 24px;
     padding: 16px;
-    flex-grow: 2;
-    max-width: 68%;
+    flex: 1 1 0;
+    min-width: 0;
     min-height: 500px;
 }
 
@@ -277,11 +310,12 @@ header #searchToggle:hover {
     justify-content: space-between;
     background: linear-gradient(135deg, hsla(231, 22%, 40%), hsla(231, 22%, 14%, 0.600));
     border: var(--c-color-border) 0.5px solid;
-    flex-grow: 1;
     border-radius: 24px;
     padding: 16px;
+    flex: 0 0 320px;
     height: max(calc(100vh - 320px), 600px);
     min-height: 500px;
+    min-width: 360px;
 }
 
 .chartSection .confidenceMeter .confidenceTxt {
@@ -294,6 +328,8 @@ header #searchToggle:hover {
 
 .chartSection .confidenceMeter .confidenceTxt h1 {
     margin: 0;
+    margin-top: 12px;
+    margin-right: 12px;
     font-size: 24px;
     font-family: 'Instrument Serif', serif;
     color: var(--c-color-textPrimary);
@@ -302,25 +338,21 @@ header #searchToggle:hover {
 .chartSection .confidenceMeter .confidenceTxt h2 {
     margin: 0;
     width: 100%;
-    font-size: 100px;
+    font-size: 72px;
     padding: 0;
-    color: var(--c-color-green);
-    text-shadow:
-        0 0 6px hsla(157, 80%, 43%, 0.75),
-        0 0 14px hsla(157, 80%, 43%, 0.55),
-        0 0 26px hsla(157, 80%, 43%, 0.35);
+    font-family: 'Instrument Serif', serif;
+}
+.confidenceMeter .confidenceTxt h2 img {
+    margin-right: 4px;
+    margin-left: -12px;
 }
 
 .chartSection .confidenceMeter .confidenceTxt p {
     margin: 0;
     padding: 0;
+    line-height: 32px;
     font-size: 32px;
     font-family: 'Instrument Serif', serif;
-    color: var(--c-color-green);
-    text-shadow:
-        0 0 6px hsla(157, 80%, 43%, 0.75),
-        0 0 14px hsla(157, 80%, 43%, 0.55),
-        0 0 26px hsla(157, 80%, 43%, 0.35);
 }
 
 .chartSection .confidenceMeter .confidenceTxt .extraInfo {
@@ -334,7 +366,7 @@ header #searchToggle:hover {
     text-shadow: none;
     background: hsla(157, 40%, 40%, 0.6);
     width: fit-content;
-    padding: 4px 12px;
+    padding: 0px 12px;
     margin: 12px 0px;
     border-radius: 20px;
 }
@@ -348,11 +380,6 @@ header #searchToggle:hover {
     width: 100%;
     bottom: 0;
     top: auto;
-    background: linear-gradient(180deg, hsl(157, 80%, 55%), hsl(157, 80%, 35%));
-    box-shadow:
-        0 0 8px hsla(157, 80%, 43%, 0.6),
-        0 0 18px hsla(157, 80%, 43%, 0.4),
-        inset 0 0 8px hsla(157, 80%, 90%, 0.25);
 }
 
 /* ********************** */
@@ -385,6 +412,7 @@ header #searchToggle:hover {
 
 .contribution .cards {
     border: var(--c-color-border) 0.5px solid;
+    max-width: none;
 }
 
 .contribution .cards:hover {
