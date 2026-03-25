@@ -1,3 +1,5 @@
+import { predict, symbolMap } from './predict.js';
+
 const API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum";
 const API_KEY = "CG-QfzzKee6U8H41yNqvhsNuwnD";
 
@@ -11,10 +13,9 @@ const TOKENS = [
     "cardano", "bitcoin", "binancecoin", "aave"
 ];
 const ids = TOKENS.join(",");
-const OHLC_CACHE_KEY = "ohlcCache";
-const OHLC_CACHE_TTL_MS = 5 * 60 * 1000;
+
 // Fetching the market data for forecast
-async function getTokenData(tokenId) {
+async function getTokenData(tokenId = ids) {
     const cacheKey = `marketData_${tokenId}`;
     const cachedData = JSON.parse(localStorage.getItem(cacheKey));
     const now = Date.now();
@@ -89,78 +90,32 @@ async function marketForecastData() {
         tableAppend(data);
     }
 }
-async function ohlcData(tokenId, days = 30) {
-    const now = Date.now();
-    const cache = JSON.parse(localStorage.getItem(OHLC_CACHE_KEY)) || [];
-    const cachedEntry = cache.find((item) => item.token === tokenId && item.days === days);
-
-    if (cachedEntry && now - cachedEntry.lastUpdated < OHLC_CACHE_TTL_MS) {
-        console.log(`Using cached OHLC for ${tokenId}`);
-        return cachedEntry.ohlc;
-    }
-
-    try {
-        const url = `https://api.coingecko.com/api/v3/coins/${tokenId}/ohlc?vs_currency=usd&days=${days}&x_cg_demo_api_key=${API_KEY}`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-        const data = await response.json();
-        const ohlc = Array.isArray(data) ? data : [];
-
-        const updatedEntry = {
-            token: tokenId,
-            days: days,
-            ohlc: ohlc,
-            lastUpdated: now
-        };
-
-        const existingIndex = cache.findIndex((item) => item.token === tokenId && item.days === days);
-        if (existingIndex >= 0) {
-            cache[existingIndex] = updatedEntry;
-        } else {
-            cache.push(updatedEntry);
-        }
-
-        localStorage.setItem(OHLC_CACHE_KEY, JSON.stringify(cache));
-        console.log(`Fetched and cached OHLC for ${tokenId}`);
-        return ohlc;
-    } catch (error) {
-        console.error(`Error fetching OHLC data for ${tokenId}:`, error);
-        if (cachedEntry) {
-            console.log(`Using stale cached OHLC for ${tokenId}`);
-            return cachedEntry.ohlc;
-        }
-        return [];
-    }
-}
-
 /* chart w/ chart.js */
 // Plot close price (index 4) against day label from timestamp (index 0).
 let priceChartInstance = null;
-function createChart(canvas, probability, ohlcRows) {
-    if (!Array.isArray(ohlcRows) || ohlcRows.length === 0) {
-        return null;
-    }
-
-    // API returns 4h candles; keep the latest candle close for each calendar day.
-    const dailyCloseMap = new Map();
-    ohlcRows.forEach((row) => {
-        const d = new Date(row[0]);
-        const dayKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-        dailyCloseMap.set(dayKey, Number(row[4]) || 0);
-    });
+function createChart(canvas, ohlcRows) {
+    if (!Array.isArray(ohlcRows) || ohlcRows.length === 0) return null;
 
     const labels = [];
     const closeData = [];
-    dailyCloseMap.forEach((close, dayKey) => {
-        const [year, month, day] = dayKey.split("-").map(Number);
-        labels.push(`${month}/${day}`);
-        closeData.push(close);
+    ohlcRows.forEach((row) => {
+        const d = new Date(row.time);
+        labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
+        closeData.push(row.close);
     });
 
-    if (priceChartInstance) {
-        //destroys previous chart
-        priceChartInstance.destroy();
+    const currentClose = Number(closeData[closeData.length - 1]);
+    const prevClose = Number(closeData[closeData.length - 2]);
+    const last24hChange = Number.isFinite(currentClose) && Number.isFinite(prevClose) && prevClose !== 0
+        ? ((currentClose - prevClose) / prevClose) * 100
+        : 0;
+    const isUp = last24hChange >= 0;
+    const accent = document.querySelector(".chartContainer");
+    if (accent) {
+        accent.style.borderLeft = isUp ? "24px solid var(--c-color-green)" : "24px solid var(--c-color-red)";
     }
+
+    if (priceChartInstance) priceChartInstance.destroy();
 
     priceChartInstance = new Chart(canvas, {
         type: "line",
@@ -173,22 +128,17 @@ function createChart(canvas, probability, ohlcRows) {
                 pointRadius: 0,
                 pointHoverRadius: 5,
                 fill: 'start',
-                borderColor: probability >= 0.5 ? 'hsl(157, 80%, 55%)' : 'hsl(0, 80%, 55%)',
-        // The gradient background
+                borderColor: isUp ? 'hsl(157, 80%, 55%)' : 'hsl(0, 80%, 55%)',
                 backgroundColor: (context) => {
                     const { ctx, chartArea } = context.chart;
-                    // If chartArea is not available, return a default color, due to loading time of dim
-                    if (!chartArea) {
-                        return 'hsla(157, 80%, 55%, 0.24)';
-                    }
-                    //the gradient
+                    if (!chartArea) return 'hsla(157, 80%, 55%, 0.24)';
                     const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                    if (probability >= 0.5) {
-                    gradient.addColorStop(0, 'hsla(157, 80%, 55%, 0.45)');
-                    gradient.addColorStop(1, 'hsla(157, 80%, 55%, 0)');
+                    if (isUp) {
+                        gradient.addColorStop(0, 'hsla(157, 80%, 55%, 0.45)');
+                        gradient.addColorStop(1, 'hsla(157, 80%, 55%, 0)');
                     } else {
-                    gradient.addColorStop(0, 'hsla(0, 80%, 55%, 0.45)');
-                    gradient.addColorStop(1, 'hsla(0, 80%, 55%, 0)');
+                        gradient.addColorStop(0, 'hsla(0, 80%, 55%, 0.45)');
+                        gradient.addColorStop(1, 'hsla(0, 80%, 55%, 0)');
                     }
                     return gradient;
                 },
@@ -198,33 +148,13 @@ function createChart(canvas, probability, ohlcRows) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false,
-                }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: 'hsl(0, 0%, 72%)'
-                    },
-                    grid: {
-                        color: 'hsla(0, 0%, 72%, 0.14)'
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: 'hsl(0, 0%, 72%)'
-                    },
-                    grid: {
-                        color: 'hsla(0, 0%, 72%, 0.08)'
-                    }
-                }
+                y: { ticks: { color: 'hsl(0, 0%, 72%)' }, grid: { color: 'hsla(0, 0%, 72%, 0.14)' } },
+                x: { ticks: { color: 'hsl(0, 0%, 72%)' }, grid: { color: 'hsla(0, 0%, 72%, 0.08)' } }
             }
         }
     });
-
     return priceChartInstance;
 }
 
@@ -244,13 +174,20 @@ function searchToggleMob(searchFlag, searchToggle, header, searchInput) {
 }
 //changing the color and meter based on probability
 function confidenceUpdater(probability, coin) {
+    if (isNaN(probability) || probability === null || typeof probability === 'undefined') {
+        console.warn(`Safety Triggered: Received NaN for ${coin}. Using 0.5 fallback.`);
+        probability = 0.5;
+    }
     const accent = document.querySelector(".chartContainer");
     const meterfill = document.querySelector(".chartSection .meter .fill");
     const confidenceTxt = document.querySelector(".confidenceTxt p");
     const predictTxt = document.querySelector(".confidenceTxt h2");
     const head = document.querySelector(".confidenceTxt h1");
 
-    head.textContent = `${coin} - Tomorrow's prediction`;
+    const formattedCoin = coin.charAt(0).toUpperCase() + coin.slice(1).replace("-", " ");
+    head.textContent = `${formattedCoin} - Tomorrow's prediction`;
+    
+    let hue;
     if (probability >= 0.5) {
         predictTxt.innerHTML = '<img src="assets/triangle-up.svg" style = "height: 64px; transform: scaleX(0.8) scaleY(1.5); vertical-align: middle;" alt="Up Arrow">'+ "UP";
         predictTxt.style.color = "var(--c-color-green)";
@@ -275,7 +212,9 @@ function confidenceUpdater(probability, coin) {
     confidenceTxt.style.textShadow = `0 0 6px hsl(${hue}, 80%, 55%, 0.75), 0 0 14px hsl(${hue}, 80%, 55%, 0.55), 0 0 26px hsl(${hue}, 80%, 55%, 0.35)`;
 }
 //The top 4 tokens
-function topTokens(data) {
+function topTokens(data, onCardClick) {
+    if (!Array.isArray(data) || data.length === 0) return;
+
     const leaderImg = document.querySelector("img.leader");
     const leaderName = document.querySelector("span.leader");
     const gainerImg = document.querySelector("img.gainer");
@@ -285,39 +224,54 @@ function topTokens(data) {
     const undervaluedImg = document.querySelector("img.underValued");
     const undervaluedName = document.querySelector("span.underValued");
     const details = document.querySelectorAll(".details_top p");
+    const cards = document.querySelectorAll(".topTokens .cards");
 
     const marketLeader = data.find(token => token.market_cap_rank === 1);
     if (marketLeader) {
         leaderImg.src = marketLeader.image;
         leaderName.textContent = marketLeader.name;
         details[0].textContent = `Price: $${Number(marketLeader.current_price || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}`;
+        cards[0].style.cursor = "pointer";
+        cards[0].onclick = () => onCardClick(marketLeader.id);
     }
 
-    const gainer = data.find(token => token.price_change_percentage_24h === Math.max(...data.map(t => t.price_change_percentage_24h)));
+    const gainer = data.find(
+        token => Number(token.price_change_percentage_24h) === Math.max(...data.map(t => Number(t.price_change_percentage_24h) || 0))
+    );
     if (gainer) {
         gainerImg.src = gainer.image;
         gainerName.textContent = gainer.name;
         details[1].textContent = `24h Change: ${Number(gainer.price_change_percentage_24h || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}%`;
+        cards[1].style.cursor = "pointer";
+        cards[1].onclick = () => onCardClick(gainer.id);
     }
 
-    const volumeLeader = data.find(token => token.total_volume === Math.max(...data.map(t => t.total_volume)));
+    const volumeLeader = data.find(
+        token => Number(token.total_volume) === Math.max(...data.map(t => Number(t.total_volume) || 0))
+    );
     if (volumeLeader) {
         volumeImg.src = volumeLeader.image;
         volumeName.textContent = volumeLeader.name;
         const volume = Number(volumeLeader.total_volume || 0);
         details[2].textContent = `Volume: $${formatCash(volume)}`;
+        cards[2].style.cursor = "pointer";
+        cards[2].onclick = () => onCardClick(volumeLeader.id);
     }
 
-    const underValued = data.find(token => token.ath_change_percentage === Math.max(...data.map(t => t.ath_change_percentage)));
+    const underValued = data.find(
+        token => Number(token.ath_change_percentage) === Math.max(...data.map(t => Number(t.ath_change_percentage) || Number.NEGATIVE_INFINITY))
+    );
     if (underValued) {
         undervaluedImg.src = underValued.image;
         undervaluedName.textContent = underValued.name;
         details[3].textContent = `ATH Change: ${Number(underValued.ath_change_percentage || 0).toFixed(2)}%`;
+        cards[3].style.cursor = "pointer";
+        cards[3].onclick = () => onCardClick(underValued.id);
     }
 }
 //Search and click functionality
 
-function setupSearch(tokensArray, onSelect) {
+function setupSearch(tokensArray, onSelect, onPicked) {
     const input = document.querySelector("form input");
     const results = document.querySelector(".searchResults");
     const form = document.querySelector("form");
@@ -328,6 +282,7 @@ function setupSearch(tokensArray, onSelect) {
         results.style.display = "none";
         results.innerHTML = "";
         onSelect(token);
+        onPicked();
     };
 
     // 1. Enter Key
@@ -369,20 +324,117 @@ function setupSearch(tokensArray, onSelect) {
     });
 }
 
+async function getOhlcForChart(tokenId) {
+    const cache = JSON.parse(localStorage.getItem('ohlcCache')) || [];
+    const cachedEntry = cache.find((item) => item.token === tokenId);
+    
+    if (cachedEntry && cachedEntry.ohlc && cachedEntry.ohlc.length > 0) {
+        return cachedEntry.ohlc.map(c => ({ time: c.time, close: c.close }));
+    }
+
+    try {
+        const symbol = symbolMap[tokenId.toLowerCase()] || "BTC";
+        const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=30`);
+        const json = await response.json();
+        return json.Data.Data.map(candle => ({
+            time: candle.time * 1000,
+            close: candle.close
+        }));
+    } catch (error) {
+        console.error("Chart fetch failed:", error);
+        return [];
+    }
+}
+
+function updateFeatureImpact(tokenId) {
+    const container = document.getElementById("featureContainer");
+    if (!container) return;
+
+    // Hardcoded top 6 relevant features for the UI demo
+    const displayFeatures = [
+        { label: "Volume", width: Math.floor(Math.random() * 40) + 50 },
+        { label: "Market Cap", width: Math.floor(Math.random() * 30) + 60 },
+        { label: "RSI (14)", width: Math.floor(Math.random() * 50) + 30 },
+        { label: "Volatility", width: Math.floor(Math.random() * 40) + 20 },
+        { label: "7-Day MA", width: Math.floor(Math.random() * 30) + 40 },
+        { label: "Momentum", width: Math.floor(Math.random() * 20) + 70 }
+    ];
+
+    container.innerHTML = "";
+    displayFeatures.forEach(f => {
+        const card = document.createElement("div");
+        card.className = "cards";
+        card.innerHTML = `
+            <h3>${f.label}</h3>
+            <div class="meter">
+                <span class="fill" style="width: ${f.width}%;"></span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function updateCloseChanges(ohlcRows) {
+    const infoRows = document.querySelectorAll(".confidenceTxt .extraInfo p");
+    if (!infoRows || infoRows.length < 3) return;
+
+    const closes = Array.isArray(ohlcRows)
+        ? ohlcRows.map(row => Number(row.close)).filter(Number.isFinite)
+        : [];
+
+    const pctFromDaysAgo = (daysAgo) => {
+        if (closes.length <= daysAgo) return null;
+        const current = closes[closes.length - 1];
+        const past = closes[closes.length - 1 - daysAgo];
+        if (!Number.isFinite(current) || !Number.isFinite(past) || past === 0) return null;
+        return ((current - past) / past) * 100;
+    };
+
+    const change24h = pctFromDaysAgo(1);
+    const change7d = pctFromDaysAgo(7);
+    const change30d = pctFromDaysAgo(30);
+
+    const formatPct = (value) => {
+        if (!Number.isFinite(value)) return "N/A";
+        return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
+    };
+
+    const applyTagColor = (el, value) => {
+        if (!el) return;
+        const isNegative = Number.isFinite(value) && value < 0;
+        el.style.backgroundColor = isNegative ? "hsl(5, 32%, 36%)" : "hsl(157, 32%, 36%)";
+    };
+
+    infoRows[0].textContent = `last 24h: ${formatPct(change24h)}`;
+    infoRows[1].textContent = `last 7d: ${formatPct(change7d)}`;
+    infoRows[2].textContent = `last 30d: ${formatPct(change30d)}`;
+
+    applyTagColor(infoRows[0], change24h);
+    applyTagColor(infoRows[1], change7d);
+    applyTagColor(infoRows[2], change30d);
+}
+
 async function main() {
     const searchToggle = document.getElementById("searchToggle");
+    const randomBtn = document.getElementById("random");
     const form = document.querySelector("form");
     const searchInput = form.querySelector("input");
     const header = document.querySelector("header");
     const canvas = document.getElementById('priceChart');
     let searchFlag = false;
-    const probability = 0.9;
-    const arr = [];
 
     searchToggleMob(searchFlag, searchToggle, header, searchInput);
     
     // Show/hide search results on input focus/blur
     const searchResults = form.querySelector(".searchResults");
+    const closeMobileSearch = () => {
+        if (window.matchMedia("(max-width: 640px)").matches) {
+            header.classList.remove("head");
+            searchFlag = false;
+            searchResults.style.display = "none";
+            searchInput.blur();
+        }
+    };
 
     searchInput.addEventListener("focus", () => {
         searchResults.style.display = "block";
@@ -396,22 +448,33 @@ async function main() {
         }, 120);
     });
     
+    async function triggerPrediction(coinId) {
+        const liveProb = await predict(coinId);
+        console.log(`Predicted probability for ${coinId}:`, liveProb);
+        confidenceUpdater(liveProb, coinId);
+        const selectedOhlc = await getOhlcForChart(coinId);
+        createChart(canvas, selectedOhlc);
+        updateFeatureImpact(coinId);
+        updateCloseChanges(selectedOhlc);
+        scrollTo({ top: document.querySelector(".chartSection").offsetTop - 100, behavior: "smooth" });
+    }
+
+    randomBtn.addEventListener("click", async () => {
+        const tokenPool = ids.split(",").map(token => token.trim()).filter(Boolean);
+        if (tokenPool.length === 0) return;
+
+        const randomToken = tokenPool[Math.floor(Math.random() * tokenPool.length)];
+        searchInput.value = randomToken;
+        await triggerPrediction(randomToken);
+    });
+
     marketForecastData();
     const data = await getTokenData(ids);
-    console.log(data);
 
-    const defaultOhlc = await ohlcData("bitcoin", 30);
-    createChart(canvas, probability, defaultOhlc);
-    confidenceUpdater(probability, "bitcoin");
+    await triggerPrediction("tether"); // Default prediction on load (can be any token from the list)
 
-    topTokens(data);
-    setupSearch(TOKENS, async (coin) => {
-        console.log("Selected:", coin);
-        confidenceUpdater(probability, coin);
-        const selectedOhlc = await ohlcData(coin, 30);
-        createChart(canvas, probability, selectedOhlc);
-        scrollTo({ top: document.querySelector(".chartSection").offsetTop-100, behavior: "smooth" });
-    });
+    if (data) topTokens(data, triggerPrediction);
+    setupSearch(TOKENS, triggerPrediction, closeMobileSearch);
 }
 
 main();

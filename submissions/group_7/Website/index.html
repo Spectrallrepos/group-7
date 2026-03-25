@@ -107,43 +107,7 @@
 
     <!-- Contribution of each feature -->
     <h1 id="contTitle">Top features that drove today's prediction</h1>
-    <div class="contribution">
-        <div class="cards">
-            <h3>Volume</h3>
-            <div class="meter">
-                <span class="fill" style="width: 85%;"></span>
-            </div>
-        </div>
-        <div class="cards">
-            <h3>Market Cap</h3>
-            <div class="meter">
-                <span class="fill" style="width: 60%;"></span>
-            </div>
-        </div>
-        <div class="cards">
-            <h3>RSI</h3>
-            <div class="meter">
-                <span class="fill" style="width: 45%;"></span>
-            </div>
-        </div>
-        <div class="cards">
-            <h3>7-Day MA</h3>
-            <div class="meter">
-                <span class="fill" style="width: 30%;"></span>
-            </div>
-        </div>
-        <div class="cards">
-            <h3>Market Cap</h3>
-            <div class="meter">
-                <span class="fill" style="width: 85%;"></span>
-            </div>
-        </div>
-        <div class="cards">
-            <h3>Others</h3>
-            <div class="meter">
-                <span class="fill" style="width: 85%;"></span>
-            </div>
-        </div>
+<div class="contribution" id="featureContainer">
     </div>
 
     <!-- The Token table, every day forecast -->
@@ -165,9 +129,45 @@
             </tbody>
         </table>
     </div>
+    <footer class="dashboard-footer">
+<footer class="dashboard-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <p class="brand">TokenTrend<span>.io</span></p>
+            <p class="tagline">Real-time market inference & 30-day historical analysis.</p>
+        </div>
+        
+        <div class="footer-section">
+            <h4>Project & Team</h4>
+            <ul class="social-links">
+                <li><a href="https://github.com/your-org/repo" target="_blank"><i class="fab"></i> GitHub Repository</a></li>
+                <li class="team-member-link">
+                    <a href="https://github.com/aarushi0618" target="_blank"><i class="fa-solid"></i>Aarushi Ghosh</a>
+                </li>
+                <li class="team-member-link">
+                    <a href="https://github.com/gaurav-murugesan" target="_blank"><i class="fa-solid"></i>Gaurav Murugesan</a>
+                </li>
+                <li class="team-member-link">
+                    <a href="https://github.com/dev-piyush27" target="_blank"><i class="fa-solid"></i>Piyush Kumar</a>
+                </li>
+                <li class="team-member-link">
+                    <a href="https://github.com/Spectrallrepos" target="_blank"><i class="fa-solid"></i>Navadeep Darla</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h4>Data Provider</h4>
+            <p>Market data provided by <strong>CoinGecko</strong> and <strong>CryptoCompare</strong></p>
+            <p class="disclaimer">Not financial advice. Values are for demonstration only.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 TokenTrend Dashboard | Built for Hackathon Excellence
+    </div>
+</footer>
 
     <script src="node_modules/chart.js/dist/chart.umd.js"></script>
-    <script src="script.js"></script>
-    <script src="predict.js"></script>
+    <script type = "module" src="script.js"></script>
 </body>
 </html>
