@@ -1,7 +1,7 @@
 # group-7
 
 ## Team Members
-- Aarushi Ghosh
+- Aarushi Ghosh-https://github.com/aarushi0618
 - Gaurav Murugesan
 - Piyush Daga
 - Darla Navadeep - [Spectrallrepos](https://github.com/Spectrallrepos)
