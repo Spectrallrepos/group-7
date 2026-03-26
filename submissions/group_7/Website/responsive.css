@@ -113,6 +113,8 @@ header {
 @media (max-width: 640px) {
     .contribution .cards {
         min-width: 20%;
+        flex-wrap: wrap;
+        width: 33%;
         max-width: 40% !important;
     }
 }

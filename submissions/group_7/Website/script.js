@@ -487,6 +487,7 @@ async function main() {
     if (canvas.innerHTML === "") await triggerPrediction("bitcoin"); // Default prediction on load (can be any token from the list)
     randomBtn.addEventListener("click", async () => {
         const tokenPool = ids.split(",").map(token => token.trim());
+        tokenPool.splice(tokenPool.indexOf("iota"), 1);
         if (tokenPool.length === 0) return;
 
         const randomToken = tokenPool[Math.floor(Math.random() * tokenPool.length)];
