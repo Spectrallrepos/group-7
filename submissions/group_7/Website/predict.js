@@ -1,5 +1,5 @@
 const OHLC_CACHE_KEY = "ohlcCache";
-const OHLC_CACHE_TTL_MS = 5 * 60 * 1000;
+const OHLC_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 export const symbolMap = {
     "bitcoin": "BTC", "ethereum": "ETH", "dogecoin": "DOGE", "eos": "EOS", 
@@ -16,6 +16,7 @@ async function ohlcData(tokenId, days = 35) {
     const cachedEntry = cache.find((item) => item.token === tokenId && item.days === days);
 
     if (cachedEntry && now - cachedEntry.lastUpdated < OHLC_CACHE_TTL_MS) {
+        console.log(`Using cached OHLC for ${tokenId} (${days} days)`, cachedEntry.ohlc);
         return cachedEntry.ohlc;
     }
 
@@ -43,9 +44,11 @@ async function ohlcData(tokenId, days = 35) {
         else cache.push(updatedEntry);
 
         localStorage.setItem(OHLC_CACHE_KEY, JSON.stringify(cache));
+        console.log(`Fetched and cached OHLC for ${tokenId} (${days} days): `, cleanData);
         return cleanData;
 
     } catch (error) {
+        console.error(`Error fetching OHLC for ${tokenId}:`, error);
         throw error;
     }
 }
@@ -124,6 +127,71 @@ async function features(tokenId) {
     };
 }
 
+const FEATURE_LABELS = [
+    "Daily Return", "Moving Avg (7)", "Moving Avg (30)", "Volatility",
+    "Momentum", "Price / MA(7)", "Price Change", "RSI (14)",
+    "EMA (7)", "EMA (30)", "MA Ratio", "VPC",
+    "Return Lag 1", "Return Lag 2", "Return Lag 3",
+    "Return Mean (7)", "Return Std (7)",
+    "BTC Daily Return", "BTC EMA (7)", "BTC RSI (14)", "BTC Return Lag 1"
+];
+//converting the feature object to a vector basica
+function buildRawFeatureVector(c, b) {
+    return [
+        c.Daily_Return, c.Moving_Avg_7, c.Moving_Avg_30, c.Volatility,
+        c.Momentum, c.Price_MAvg_7_ratio, c.Price_Change, c.RSI_14,
+        c.EMA_7, c.EMA_30, c.MA_ratio, c.VPC,
+        c.Return_lag1, c.Return_lag2, c.Return_lag3,
+        c.Return_mean_7, c.Return_std_7,
+        b.Daily_Return, b.EMA_7, b.RSI_14, b.Return_lag1
+    ];
+}
+
+function computeLinearTerms(model, rawFeatures) {
+    let z = model.intercept;
+    const terms = [];
+
+    for (let i = 0; i < rawFeatures.length; i++) {
+        let val = rawFeatures[i];
+        const m = model.scaling.mean[i];
+        let s = model.scaling.std[i];
+
+        if (isNaN(val) || val === null) val = m;
+        if (s === 0) s = 1;
+
+        const scaledVal = (val - m) / s;
+        const wixi = scaledVal * model.weights[i];
+        z += wixi;
+
+        terms.push({
+            index: i,
+            label: FEATURE_LABELS[i] || `Feature ${i + 1}`,
+            wixi
+        });
+    }
+
+    return { z, terms };
+}
+
+export async function getFeatureContributions(tokenId) {
+    const res = await fetch('./data.json');
+    const model = await res.json();
+
+    const c = await features(tokenId);
+    const b = await features('bitcoin');
+    const rawFeatures = buildRawFeatureVector(c, b);
+
+    const { z, terms } = computeLinearTerms(model, rawFeatures);
+
+    return {
+        z,
+        features: terms.map((term) => ({
+            ...term,
+            contributionPct: (term.wixi / z) * 100
+        }))
+    };
+}
+
 export async function predict(tokenId) {
     try {
         const res = await fetch('./data.json');
@@ -132,28 +200,8 @@ export async function predict(tokenId) {
 
         const c = await features(tokenId);
         const b = await features('bitcoin');
-
-        const rawFeatures = [
-            c.Daily_Return, c.Moving_Avg_7, c.Moving_Avg_30, c.Volatility,
-            c.Momentum, c.Price_MAvg_7_ratio, c.Price_Change, c.RSI_14,
-            c.EMA_7, c.EMA_30, c.MA_ratio, c.VPC,
-            c.Return_lag1, c.Return_lag2, c.Return_lag3,
-            c.Return_mean_7, c.Return_std_7,
-            b.Daily_Return, b.EMA_7, b.RSI_14, b.Return_lag1 
-        ];
-
-        let z = model.intercept;
-        for (let i = 0; i < rawFeatures.length; i++) {
-            let val = rawFeatures[i];
-            let m = model.scaling.mean[i];
-            let s = model.scaling.std[i];
-
-            if (isNaN(val) || val === null) val = m;
-            if (s === 0) s = 1; 
-
-            let scaledVal = (val - m) / s;
-            z += (scaledVal * model.weights[i]);
-        }
+        const rawFeatures = buildRawFeatureVector(c, b);
+        const { z } = computeLinearTerms(model, rawFeatures);
 
         if (isNaN(z)) throw new Error("Math resulted in NaN");
 

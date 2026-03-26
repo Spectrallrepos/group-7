@@ -1,4 +1,4 @@
-import { predict, symbolMap } from './predict.js';
+import { predict, symbolMap, getFeatureContributions } from './predict.js';
 
 const API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum";
 const API_KEY = "CG-QfzzKee6U8H41yNqvhsNuwnD";
@@ -16,7 +16,7 @@ const ids = TOKENS.join(",");
 
 // Fetching the market data for forecast
 async function getTokenData(tokenId = ids) {
-    const cacheKey = `marketData_${tokenId}`;
+    const cacheKey = `marketData_${tokenId}`; //unique cache key for ts
     const cachedData = JSON.parse(localStorage.getItem(cacheKey));
     const now = Date.now();
     const DELAY_MS = 5 *60 * 1000;
@@ -24,7 +24,7 @@ async function getTokenData(tokenId = ids) {
     if (cachedData && (now - cachedData.lastUpdated < DELAY_MS)) {
         console.log(`Using cached data for ${tokenId}`);
         console.log(cachedData.data);
-        return cachedData.data;
+        return cachedData.data; //format is objects in array, early check
     }
     try {
         console.log(`Fetching fresh data for ${tokenId}...`);
@@ -34,13 +34,16 @@ async function getTokenData(tokenId = ids) {
         if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
         
         const data = await response.json();
+
+
         // CACHE SAVE: Store the new data with a timestamp
         localStorage.setItem(cacheKey, JSON.stringify({
-            lastUpdated: now,
-            data: data
+            lastUpdated: now, //set timestamp to now, this is a member
+            data: data //copy the data
         }));
         console.log(`Saved ${tokenId} to cache.`);
         return data;
+
     } catch (error) {
         console.error(`Error fetching ${tokenId}:`, error);
         // Fallback: If API fails (e.g., internet out), return stale cache if available
@@ -49,18 +52,18 @@ async function getTokenData(tokenId = ids) {
 }
 //Cash formatter
 function formatCash(n) {
-    if (n < 1e3) return n;
+    if (n < 1e3) return n.toFixed(4);
     if (n >= 1e3 && n < 1e6) return +(n / 1e3).toFixed(1) + "K";
     if (n >= 1e6 && n < 1e9) return +(n / 1e6).toFixed(1) + "M";
     if (n >= 1e9 && n < 1e12) return +(n / 1e9).toFixed(1) + "B";
     if (n >= 1e12) return +(n / 1e12).toFixed(1) + "T";
 }
 //Append the data to the table
-function tableAppend(data) {
+function tableAppend(data, cardClick) {
     const tBody = document.querySelector("tbody");
     tBody.innerHTML = ""; // Clear existing rows
     
-    data.forEach(token => {
+    data.forEach(token => { //for each token, we create a row and append to the table body
         const change24h = Number(token.price_change_percentage_24h) || 0;
         const changeColor = change24h >= 0 ? 'var(--c-color-green)' : 'var(--c-color-red)';
         
@@ -72,7 +75,7 @@ function tableAppend(data) {
                 ${token.name ? token.name: "N/A"}
                 (${token.symbol ? token.symbol.toUpperCase() : "N/A"})
             </td>
-            <td>$${Number(token.current_price || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}</td>
+            <td>$${Number(token.current_price || 0).toLocaleString("en-US", { maximumFractionDigits: 3 })}</td>
             <td style="color: ${changeColor}">
                 ${change24h >= 0 ? "+" : ""}${change24h.toFixed(2)}%
             </td>
@@ -80,27 +83,25 @@ function tableAppend(data) {
             <td>$${formatCash(Number(token.total_volume || 0))}</td>
         `;
         tBody.appendChild(row);
+        row.addEventListener("click", () => {
+            cardClick(token.id);
+        });
     });
-}
-//async function to get the data via above fn
-// We do need an async here cuz the fn above returns a promise (we need to wait)
-async function marketForecastData() {
-    const data = await getTokenData(ids);
-    if (data && Array.isArray(data)) {
-        tableAppend(data);
-    }
 }
 /* chart w/ chart.js */
 // Plot close price (index 4) against day label from timestamp (index 0).
 let priceChartInstance = null;
 function createChart(canvas, ohlcRows) {
-    if (!Array.isArray(ohlcRows) || ohlcRows.length === 0) return null;
+    //data return format is an array of objects
+
+    if (ohlcRows.length === 0) return null;
 
     const labels = [];
     const closeData = [];
+
     ohlcRows.forEach((row) => {
         const d = new Date(row.time);
-        labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
+        labels.push(`${d.getMonth() + 1}/${d.getDate()}`);//format as M/D
         closeData.push(row.close);
     });
 
@@ -109,13 +110,15 @@ function createChart(canvas, ohlcRows) {
     const last24hChange = Number.isFinite(currentClose) && Number.isFinite(prevClose) && prevClose !== 0
         ? ((currentClose - prevClose) / prevClose) * 100
         : 0;
+    
+    
     const isUp = last24hChange >= 0;
     const accent = document.querySelector(".chartContainer");
     if (accent) {
         accent.style.borderLeft = isUp ? "24px solid var(--c-color-green)" : "24px solid var(--c-color-red)";
     }
 
-    if (priceChartInstance) priceChartInstance.destroy();
+    if (priceChartInstance) priceChartInstance.destroy(); // Destroy previous chart instance if it exists
 
     priceChartInstance = new Chart(canvas, {
         type: "line",
@@ -142,7 +145,7 @@ function createChart(canvas, ohlcRows) {
                     }
                     return gradient;
                 },
-                tension: 0.3,
+                tension: 0.2,
             }]
         },
         options: {
@@ -157,8 +160,6 @@ function createChart(canvas, ohlcRows) {
     });
     return priceChartInstance;
 }
-
-/******************************************/
 /* UI/UX Enhancements */
 // Mobile search toggle
 function searchToggleMob(searchFlag, searchToggle, header, searchInput) {
@@ -168,6 +169,7 @@ function searchToggleMob(searchFlag, searchToggle, header, searchInput) {
             header.classList.toggle("head", searchFlag); //basically toggles the existence of head class
             if (searchFlag) {
                 searchInput.focus();
+                searchInput.value = ""; // Clear input when opening search
             }
         });
     }
@@ -204,176 +206,14 @@ function confidenceUpdater(probability, coin) {
         hue = 50 - (probability * 50); // From orange to red
     }
 
-    meterfill.style.backgroundColor = "hsl(" + hue + ", 60%, 64%)";
+    meterfill.style.backgroundColor = "hsl(" + hue + ", 36%, 64%)";
     meterfill.style.boxShadow = "0 0 10px hsl(" + hue + ", 80%, 55%)";
     meterfill.style.height = (probability * 100) + "%";
     confidenceTxt.textContent = `Confidence: ${(probability * 100).toFixed(1)}%`;
     confidenceTxt.style.color = "hsl(" + hue + ", 80%, 55%)";
     confidenceTxt.style.textShadow = `0 0 6px hsl(${hue}, 80%, 55%, 0.75), 0 0 14px hsl(${hue}, 80%, 55%, 0.55), 0 0 26px hsl(${hue}, 80%, 55%, 0.35)`;
 }
-//The top 4 tokens
-function topTokens(data, onCardClick) {
-    if (!Array.isArray(data) || data.length === 0) return;
-
-    const leaderImg = document.querySelector("img.leader");
-    const leaderName = document.querySelector("span.leader");
-    const gainerImg = document.querySelector("img.gainer");
-    const gainerName = document.querySelector("span.gainer");
-    const volumeImg = document.querySelector("img.volumeLeader");
-    const volumeName = document.querySelector("span.volumeLeader");
-    const undervaluedImg = document.querySelector("img.underValued");
-    const undervaluedName = document.querySelector("span.underValued");
-    const details = document.querySelectorAll(".details_top p");
-    const cards = document.querySelectorAll(".topTokens .cards");
-
-    const marketLeader = data.find(token => token.market_cap_rank === 1);
-    if (marketLeader) {
-        leaderImg.src = marketLeader.image;
-        leaderName.textContent = marketLeader.name;
-        details[0].textContent = `Price: $${Number(marketLeader.current_price || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}`;
-        cards[0].style.cursor = "pointer";
-        cards[0].onclick = () => onCardClick(marketLeader.id);
-    }
-
-    const gainer = data.find(
-        token => Number(token.price_change_percentage_24h) === Math.max(...data.map(t => Number(t.price_change_percentage_24h) || 0))
-    );
-    if (gainer) {
-        gainerImg.src = gainer.image;
-        gainerName.textContent = gainer.name;
-        details[1].textContent = `24h Change: ${Number(gainer.price_change_percentage_24h || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}%`;
-        cards[1].style.cursor = "pointer";
-        cards[1].onclick = () => onCardClick(gainer.id);
-    }
-
-    const volumeLeader = data.find(
-        token => Number(token.total_volume) === Math.max(...data.map(t => Number(t.total_volume) || 0))
-    );
-    if (volumeLeader) {
-        volumeImg.src = volumeLeader.image;
-        volumeName.textContent = volumeLeader.name;
-        const volume = Number(volumeLeader.total_volume || 0);
-        details[2].textContent = `Volume: $${formatCash(volume)}`;
-        cards[2].style.cursor = "pointer";
-        cards[2].onclick = () => onCardClick(volumeLeader.id);
-    }
-
-    const underValued = data.find(
-        token => Number(token.ath_change_percentage) === Math.max(...data.map(t => Number(t.ath_change_percentage) || Number.NEGATIVE_INFINITY))
-    );
-    if (underValued) {
-        undervaluedImg.src = underValued.image;
-        undervaluedName.textContent = underValued.name;
-        details[3].textContent = `ATH Change: ${Number(underValued.ath_change_percentage || 0).toFixed(2)}%`;
-        cards[3].style.cursor = "pointer";
-        cards[3].onclick = () => onCardClick(underValued.id);
-    }
-}
-//Search and click functionality
-
-function setupSearch(tokensArray, onSelect, onPicked) {
-    const input = document.querySelector("form input");
-    const results = document.querySelector(".searchResults");
-    const form = document.querySelector("form");
-
-    // Helper to handle selection
-    const handlePick = (token) => {
-        input.value = token;
-        results.style.display = "none";
-        results.innerHTML = "";
-        onSelect(token);
-        onPicked();
-    };
-
-    // 1. Enter Key
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const query = input.value.toLowerCase().trim();
-        const match = tokensArray.find(t => t.toLowerCase() === query);
-        if (match) handlePick(match);
-        else {
-            const first = results.querySelector("p:not([style*='pointer-events'])");
-            if (first) handlePick(first.textContent);
-        }
-    });
-
-    // 2. Input/Filter Logic
-    input.addEventListener("input", () => {
-        const query = input.value.toLowerCase().trim();
-        results.innerHTML = "";
-        if (!query) return results.style.display = "none";
-        const filtered = tokensArray.filter(t => t.toLowerCase().includes(query));
-        results.style.display = "block";
-        if (filtered.length > 0) {
-            filtered.forEach(token => {
-                const p = document.createElement("p");
-                p.textContent = token;
-                p.style.cursor = "pointer";
-                results.appendChild(p);
-            });
-        } else {
-            results.innerHTML = `<p style="padding:8px 24px; pointer-events:none;">Token not found.</p>`;
-        }
-    });
-
-    // 3. Click Logic
-    results.addEventListener("mousedown", (e) => {
-        if (e.target.tagName === "P" && e.target.style.pointerEvents !== "none") {
-            handlePick(e.target.textContent);
-        }
-    });
-}
-
-async function getOhlcForChart(tokenId) {
-    const cache = JSON.parse(localStorage.getItem('ohlcCache')) || [];
-    const cachedEntry = cache.find((item) => item.token === tokenId);
-    
-    if (cachedEntry && cachedEntry.ohlc && cachedEntry.ohlc.length > 0) {
-        return cachedEntry.ohlc.map(c => ({ time: c.time, close: c.close }));
-    }
-
-    try {
-        const symbol = symbolMap[tokenId.toLowerCase()] || "BTC";
-        const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=30`);
-        const json = await response.json();
-        return json.Data.Data.map(candle => ({
-            time: candle.time * 1000,
-            close: candle.close
-        }));
-    } catch (error) {
-        console.error("Chart fetch failed:", error);
-        return [];
-    }
-}
-
-function updateFeatureImpact(tokenId) {
-    const container = document.getElementById("featureContainer");
-    if (!container) return;
-
-    // Hardcoded top 6 relevant features for the UI demo
-    const displayFeatures = [
-        { label: "Volume", width: Math.floor(Math.random() * 40) + 50 },
-        { label: "Market Cap", width: Math.floor(Math.random() * 30) + 60 },
-        { label: "RSI (14)", width: Math.floor(Math.random() * 50) + 30 },
-        { label: "Volatility", width: Math.floor(Math.random() * 40) + 20 },
-        { label: "7-Day MA", width: Math.floor(Math.random() * 30) + 40 },
-        { label: "Momentum", width: Math.floor(Math.random() * 20) + 70 }
-    ];
-
-    container.innerHTML = "";
-    displayFeatures.forEach(f => {
-        const card = document.createElement("div");
-        card.className = "cards";
-        card.innerHTML = `
-            <h3>${f.label}</h3>
-            <div class="meter">
-                <span class="fill" style="width: ${f.width}%;"></span>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
+//tags in the confidence card for 24h, 7d, 30d changes
 function updateCloseChanges(ohlcRows) {
     const infoRows = document.querySelectorAll(".confidenceTxt .extraInfo p");
     if (!infoRows || infoRows.length < 3) return;
@@ -413,6 +253,196 @@ function updateCloseChanges(ohlcRows) {
     applyTagColor(infoRows[1], change7d);
     applyTagColor(infoRows[2], change30d);
 }
+// ////////
+//The top 4 tokens
+function topTokens(data, cardClick) {
+    //data is array of obbjects
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const leaderImg = document.querySelector("img.leader");
+    const leaderName = document.querySelector("span.leader");
+    const gainerImg = document.querySelector("img.gainer");
+    const gainerName = document.querySelector("span.gainer");
+    const volumeImg = document.querySelector("img.volumeLeader");
+    const volumeName = document.querySelector("span.volumeLeader");
+    const undervaluedImg = document.querySelector("img.underValued");
+    const undervaluedName = document.querySelector("span.underValued");
+    const details = document.querySelectorAll(".details_top p");
+    const cards = document.querySelectorAll(".topTokens .cards");
+
+    const marketLeader = data.find(token => token.market_cap_rank === 1);
+    if (marketLeader) {
+        leaderImg.src = marketLeader.image;
+        leaderName.textContent = marketLeader.name;
+        details[0].textContent = `Price: $${Number(marketLeader.current_price || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}`;
+        cards[0].style.cursor = "pointer";
+        cards[0].onclick = () => cardClick(marketLeader.id);
+    }
+
+    const gainer = data.find(
+        token => Number(token.price_change_percentage_24h) === Math.max(...data.map(t => Number(t.price_change_percentage_24h) || 0))
+    );
+    if (gainer) {
+        gainerImg.src = gainer.image;
+        gainerName.textContent = gainer.name;
+        details[1].textContent = `24h Change: ${Number(gainer.price_change_percentage_24h || 0).toLocaleString("en-US", { maximumFractionDigits: 4 })}%`;
+        cards[1].style.cursor = "pointer";
+        cards[1].onclick = () => cardClick(gainer.id);
+    }
+
+    const volumeLeader = data.find(
+        token => Number(token.total_volume) === Math.max(...data.map(t => Number(t.total_volume) || 0))
+    );
+    if (volumeLeader) {
+        volumeImg.src = volumeLeader.image;
+        volumeName.textContent = volumeLeader.name;
+        const volume = Number(volumeLeader.total_volume || 0);
+        details[2].textContent = `Volume: $${formatCash(volume)}`;
+        cards[2].style.cursor = "pointer";
+        cards[2].onclick = () => cardClick(volumeLeader.id);
+    }
+
+    const underValued = data.find(
+        token => Number(token.ath_change_percentage) === Math.max(...data.map(t => Number(t.ath_change_percentage) || Number.NEGATIVE_INFINITY))
+    );
+    if (underValued) {
+        undervaluedImg.src = underValued.image;
+        undervaluedName.textContent = underValued.name;
+        details[3].textContent = `ATH Change: ${Number(underValued.ath_change_percentage || 0).toFixed(2)}%`;
+        cards[3].style.cursor = "pointer";
+        cards[3].onclick = () => cardClick(underValued.id);
+    }
+}
+//Search and click functionality
+
+function setupSearch(tokensArray, onSelect, onPicked) {
+    const input = document.querySelector("form input");
+    const results = document.querySelector(".searchResults");
+    const form = document.querySelector("form");
+
+    // Helper to handle selection
+    const handlePick = (token) => {
+        input.value = token;
+        results.style.display = "none";
+        results.innerHTML = "";
+        onSelect(token);
+        onPicked();
+    };
+
+    // 1. Enter Key
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const query = input.value.toLowerCase();
+        const match = tokensArray.find(t => t.toLowerCase() === query);
+        if (match) handlePick(match);
+    });
+
+    // 2. Input/Filter Logic
+    input.addEventListener("input", () => {
+        const query = input.value.toLowerCase().trim();
+        results.innerHTML = "";
+        if (!query) return results.style.display = "none";
+        const filtered = tokensArray.filter(t => t.toLowerCase().includes(query));
+        results.style.display = "block";
+        if (filtered.length > 0) {
+            filtered.forEach(token => {
+                const p = document.createElement("p");
+                p.textContent = token;
+                p.style.cursor = "pointer";
+                results.appendChild(p);
+            });
+        } else {
+            results.innerHTML = `<p style="padding:8px 24px; pointer-events:none;">Token not found.</p>`;
+        }
+    });
+
+    // 3. Click Logic
+    results.addEventListener("mousedown", (e) => {
+        if (e.target.tagName === "P" && e.target.style.pointerEvents !== "none") {
+            handlePick(e.target.textContent);
+        }
+    });
+}
+
+async function getOhlcForChart(tokenId) {
+    const CHART_DAYS = 30;
+    const OHLC_CACHE_TTL_MS = 5 * 60 * 1000;
+    const now = Date.now();
+    const cache = JSON.parse(localStorage.getItem('ohlcCache')) || [];
+    const cachedEntry = cache.find((item) => (
+        item.token === tokenId
+        && item.days === CHART_DAYS
+        && item.ohlc
+        && now - item.lastUpdated < OHLC_CACHE_TTL_MS
+    ));
+    
+    if (cachedEntry && cachedEntry.ohlc.length > 0) {
+        return cachedEntry.ohlc.map(c => ({ time: c.time, close: c.close }));
+    }
+
+    try {
+        const symbol = symbolMap[tokenId.toLowerCase()] || "BTC";
+        const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=${CHART_DAYS}`);
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        const json = await response.json();
+        if (!json?.Data?.Data) throw new Error("Malformed OHLC response");
+
+        const cleanData = json.Data.Data.map(candle => ({
+            time: candle.time * 1000,
+            close: candle.close
+        }));
+
+        const updatedEntry = {
+            token: tokenId,
+            days: CHART_DAYS,
+            ohlc: cleanData,
+            lastUpdated: now
+        };
+        const existingIndex = cache.findIndex((item) => item.token === tokenId && item.days === CHART_DAYS);
+        if (existingIndex >= 0) cache[existingIndex] = updatedEntry;
+        else cache.push(updatedEntry);
+        localStorage.setItem('ohlcCache', JSON.stringify(cache));
+
+        return cleanData;
+    } catch (error) {
+        console.error("Chart fetch failed:", error);
+        return [];
+    }
+}
+
+async function updateFeatureImpact(tokenId) {
+    const container = document.getElementById("featureContainer");
+    if (!container) return;
+
+    try {
+        const { z, features } = await getFeatureContributions(tokenId);
+        const topFeatures = features
+            .slice()
+            .sort((a, b) => Math.abs(b.wixi) - Math.abs(a.wixi))
+            .slice(0, 6);
+
+        container.innerHTML = "";
+        topFeatures.forEach((feature) => {
+            const width = Math.min(100, Math.max(0, Math.abs(feature.contributionPct)));
+            const card = document.createElement("div");
+            let color;
+            if (feature.contributionPct>0) color = "hsl(126, 20%, 46%)";
+            else color = "hsl(0, 28%, 49%)";
+            card.className = "cards";
+            card.innerHTML = `
+                <h3>${feature.label}</h3>
+                <div class="meter">
+                    <span class="fill" style="width: ${width}%;background-color: ${color}"></span>
+                </div>
+                <p>Contribution: ${feature.contributionPct.toFixed(1)}%</p>
+            `;
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error("Feature impact update failed:", error);
+        container.innerHTML = "<p>Could not load feature contributions.</p>";
+    }
+}
 
 async function main() {
     const searchToggle = document.getElementById("searchToggle");
@@ -421,11 +451,19 @@ async function main() {
     const searchInput = form.querySelector("input");
     const header = document.querySelector("header");
     const canvas = document.getElementById('priceChart');
+    const chartLoading = document.querySelector(".chartLoading");
+    const confidenceLoading = document.querySelector(".confidenceLoading");
     let searchFlag = false;
 
+    const setPredictionLoading = (isLoading) => {
+        chartLoading?.classList.toggle("hidden", !isLoading);
+        confidenceLoading?.classList.toggle("hidden", !isLoading);
+    };
+
     searchToggleMob(searchFlag, searchToggle, header, searchInput);
+    const data = await getTokenData(ids);
     
-    // Show/hide search results on input focus/blur
+    
     const searchResults = form.querySelector(".searchResults");
     const closeMobileSearch = () => {
         if (window.matchMedia("(max-width: 640px)").matches) {
@@ -440,6 +478,7 @@ async function main() {
         searchResults.style.display = "block";
     });
     searchInput.addEventListener("blur", () => {
+        searchInput.value = ""; // Clear input on blur
         // Delay hide so pointerdown on a result can run before the dropdown disappears.
         setTimeout(() => {
             if (!form.contains(document.activeElement)) {
@@ -449,18 +488,29 @@ async function main() {
     });
     
     async function triggerPrediction(coinId) {
-        const liveProb = await predict(coinId);
-        console.log(`Predicted probability for ${coinId}:`, liveProb);
-        confidenceUpdater(liveProb, coinId);
-        const selectedOhlc = await getOhlcForChart(coinId);
-        createChart(canvas, selectedOhlc);
-        updateFeatureImpact(coinId);
-        updateCloseChanges(selectedOhlc);
-        scrollTo({ top: document.querySelector(".chartSection").offsetTop - 100, behavior: "smooth" });
+        setPredictionLoading(true);
+        try {
+            const liveProb = await predict(coinId);
+            console.log(`Predicted probability for ${coinId}:`, liveProb);
+            confidenceUpdater(liveProb, coinId);
+            const selectedOhlc = await getOhlcForChart(coinId);
+            createChart(canvas, selectedOhlc);
+            await updateFeatureImpact(coinId);
+            updateCloseChanges(selectedOhlc);
+            scrollTo({ top: document.querySelector(".chartSection").offsetTop - 100, behavior: "smooth" });
+        } catch (error) {
+            console.error("Prediction flow failed:", error);
+        } finally {
+            setPredictionLoading(false);
+        }
+    }
+    if (data && Array.isArray(data)) {
+        tableAppend(data, triggerPrediction);
     }
 
+    if (canvas.innerHTML === "") await triggerPrediction("bitcoin"); // Default prediction on load (can be any token from the list)
     randomBtn.addEventListener("click", async () => {
-        const tokenPool = ids.split(",").map(token => token.trim()).filter(Boolean);
+        const tokenPool = ids.split(",").map(token => token.trim());
         if (tokenPool.length === 0) return;
 
         const randomToken = tokenPool[Math.floor(Math.random() * tokenPool.length)];
@@ -468,12 +518,9 @@ async function main() {
         await triggerPrediction(randomToken);
     });
 
-    marketForecastData();
-    const data = await getTokenData(ids);
 
-    await triggerPrediction("tether"); // Default prediction on load (can be any token from the list)
 
-    if (data) topTokens(data, triggerPrediction);
+    topTokens(data, triggerPrediction);
     setupSearch(TOKENS, triggerPrediction, closeMobileSearch);
 }
 

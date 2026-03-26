@@ -87,8 +87,16 @@
     <div class="chartSection">
         <div class="chartContainer glow">
             <canvas id="priceChart"></canvas>
+            <div class="loadingOverlay chartLoading hidden" aria-live="polite">
+                <div class="loader"></div>
+                <p>Loading chart...</p>
+            </div>
         </div>
         <div class="confidenceMeter">
+            <div class="loadingOverlay confidenceLoading hidden" aria-live="polite">
+                <div class="loader"></div>
+                <p>Calculating confidence...</p>
+            </div>
             <div class="confidenceTxt">
                 <h1>Bitcoin - Tomorrow's prediction</h1>
                 <h2></h2>

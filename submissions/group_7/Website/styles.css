@@ -291,6 +291,8 @@ header #searchToggle:hover {
     border-left: var(--c-color-green) 24px solid;
     border-radius: 24px;
     padding: 16px;
+    position: relative;
+    overflow: hidden;
     flex: 1 1 0;
     min-width: 0;
     min-height: 500px;
@@ -312,10 +314,53 @@ header #searchToggle:hover {
     border: var(--c-color-border) 0.5px solid;
     border-radius: 24px;
     padding: 16px;
+    position: relative;
+    overflow: hidden;
     flex: 0 0 320px;
     height: max(calc(100vh - 320px), 600px);
     min-height: 500px;
     min-width: 360px;
+}
+
+.loadingOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(180deg, hsla(231, 22%, 12%, 0.72), hsla(231, 22%, 12%, 0.86));
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+.loadingOverlay.hidden {
+    display: none;
+}
+
+.loadingOverlay .loader {
+    width: 42px;
+    height: 42px;
+    border: 4px solid hsla(0, 0%, 88%, 0.22);
+    border-top-color: var(--c-color-blue);
+    border-radius: 50%;
+    animation: spin 0.85s linear infinite;
+}
+
+.loadingOverlay p {
+    margin: 0;
+    color: var(--c-color-textPrimary);
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    letter-spacing: 0.2px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .chartSection .confidenceMeter .confidenceTxt {
@@ -414,7 +459,19 @@ header #searchToggle:hover {
     border: var(--c-color-border) 0.5px solid;
     max-width: none;
 }
-
+.contribution .cards h3 {
+    font-size: 18px;
+    margin: 0;
+    padding: 4px;
+    margin-bottom: 32px;
+    color: var(--c-color-textPrimary);
+}
+.contribution .cards p {
+    margin: 8px 0;
+    padding: 0;
+    font-size: 14px;
+    color: var(--c-color-textMuted);
+}
 .contribution .cards:hover {
     box-shadow: none;
     transform: none;
@@ -429,6 +486,15 @@ header #searchToggle:hover {
     overflow-x: auto;
     overflow-y: hidden;
 }
+.table h1{
+    font-size: 36px;
+    margin: 0;
+    line-height: 10px;
+    margin-top: 32px;
+    margin-bottom: 4px;
+    font-family: 'Instrument Serif', serif;
+    color: var(--c-color-textPrimary);
+}
 
 table {
     border-collapse: collapse;
@@ -436,7 +502,13 @@ table {
     margin: 20px 0px;
     width: 100%;
 }
-
+tr:hover {
+    cursor: pointer;
+    background-color: hsla(231, 22%, 28%, 0.600);
+}
+tr:first-child {
+    background-color: hsla(231, 22%, 28%, 0.600);
+}
 th, td {
     padding: 12px;
     text-align: left;
@@ -451,7 +523,7 @@ table td img {
 }
 
 th {
-    background-color: hsla(231, 22%, 28%, 0.600);
+    background-color: hsla(231, 22%, 28%);
 }
 /* THe footer */
 .dashboard-footer {
