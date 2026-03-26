@@ -1,11 +1,13 @@
-# Team Members
+# group-7
+
+## Team Members
 - Aarushi Ghosh
 - Gaurav Murugesan
 - Piyush Daga
 - Darla Navadeep - [Spectrallrepos](https://github.com/Spectrallrepos)
 - Nishant Jat -
 
-# Project links
+## Project links
 - PPT link: [ppt]
 - Hosted demo: [TokenTrend](https://tokentrendmu.vercel.app/)
 
