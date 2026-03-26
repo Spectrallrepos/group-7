@@ -365,45 +365,21 @@ function setupSearch(tokensArray, onSelect, onPicked) {
 }
 
 async function getOhlcForChart(tokenId) {
-    const CHART_DAYS = 30;
-    const OHLC_CACHE_TTL_MS = 5 * 60 * 1000;
-    const now = Date.now();
     const cache = JSON.parse(localStorage.getItem('ohlcCache')) || [];
-    const cachedEntry = cache.find((item) => (
-        item.token === tokenId
-        && item.days === CHART_DAYS
-        && item.ohlc
-        && now - item.lastUpdated < OHLC_CACHE_TTL_MS
-    ));
+    const cachedEntry = cache.find((item) => item.token === tokenId);
     
-    if (cachedEntry && cachedEntry.ohlc.length > 0) {
+    if (cachedEntry && cachedEntry.ohlc && cachedEntry.ohlc.length > 0) {
         return cachedEntry.ohlc.map(c => ({ time: c.time, close: c.close }));
     }
 
     try {
         const symbol = symbolMap[tokenId.toLowerCase()] || "BTC";
-        const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=${CHART_DAYS}`);
-        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        const response = await fetch(`https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=30`);
         const json = await response.json();
-        if (!json?.Data?.Data) throw new Error("Malformed OHLC response");
-
-        const cleanData = json.Data.Data.map(candle => ({
+        return json.Data.Data.map(candle => ({
             time: candle.time * 1000,
             close: candle.close
         }));
-
-        const updatedEntry = {
-            token: tokenId,
-            days: CHART_DAYS,
-            ohlc: cleanData,
-            lastUpdated: now
-        };
-        const existingIndex = cache.findIndex((item) => item.token === tokenId && item.days === CHART_DAYS);
-        if (existingIndex >= 0) cache[existingIndex] = updatedEntry;
-        else cache.push(updatedEntry);
-        localStorage.setItem('ohlcCache', JSON.stringify(cache));
-
-        return cleanData;
     } catch (error) {
         console.error("Chart fetch failed:", error);
         return [];
