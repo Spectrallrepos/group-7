@@ -2,8 +2,8 @@
 
 ## Team Members
 - Aarushi Ghosh-https://github.com/aarushi0618
-- Gaurav Murugesan
-- Piyush Daga
+- Gaurav Murugesan - https://github.com/gaurav-murugesan
+- Piyush Daga - https://github.com/dev-piyush27
 - Darla Navadeep - [Spectrallrepos](https://github.com/Spectrallrepos)
 - Nishant Jat -
 
