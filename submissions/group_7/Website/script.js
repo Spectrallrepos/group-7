@@ -13,6 +13,7 @@ const TOKENS = [
     "cardano", "bitcoin", "binancecoin", "aave"
 ];
 const ids = TOKENS.join(",");
+const INITIAL_BOOT_REFRESH_KEY = "initialBootRefreshDone";
 
 // Fetching the market data for forecast
 async function getTokenData(tokenId = ids) {
@@ -421,6 +422,12 @@ async function updateFeatureImpact(tokenId) {
 }
 
 async function main() {
+    if (!sessionStorage.getItem(INITIAL_BOOT_REFRESH_KEY)) {
+        sessionStorage.setItem(INITIAL_BOOT_REFRESH_KEY, "1");
+        window.location.reload();
+        return;
+    }
+
     const searchToggle = document.getElementById("searchToggle");
     const randomBtn = document.getElementById("random");
     const form = document.querySelector("form");
