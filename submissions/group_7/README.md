@@ -41,6 +41,35 @@ We ran a competitive evaluation using TimeSeriesSplit (3-fold) to avoid data lea
 The learned "intelligence" is compressed into a 100% portable data.json. This contains scaling parameters, feature importances, and model weights, allowing the frontend to run instant inference without a live Python backend.
 
 ---
+
+## Mathematical Model & Prediction Engine
+The prediction math for the dashboard executes entirely at the edge. Instead of relying on a slow Python backend, the application loads a pre-trained weight matrix and calculates the inference instantly within the client's browser for zero-latency forecasting.
+
+### 1. Edge-Based Logistic Regression
+We deployed a multivariate classification algorithm optimized for client-side execution without compromising mathematical rigor:
+
+**Serverless Inference:** The core prediction engine runs entirely within the JavaScript environment, completely eliminating traditional server latency, network routing delays, and backend API bottlenecks.
+**Static Weight Mapping:** By reading directly from the compiled data.json file, the algorithm continuously applies historical training weights to live, standardized data streams instantaneously.
+
+### 2. Sigmoid Probability Compression
+To translate raw mathematical output into a user-friendly metric, the engine utilizes a strict mathematical activation function:
+
+**Unbounded to Bounded:** The system processes the final weighted sums (Z-scores) through a Sigmoid curve to compress the extreme numerical variances found in financial data.
+**Definitive Percentages:** This mathematical compression guarantees that the abstract logistic scores are squashed into a strict, readable probability metric that is definitively bounded between 0% and 100%.
+
+### 3. Scientific Decision Boundary
+We prioritized statistical honesty over visual appeal when designing the user interface and the underlying confidence meter:
+
+**Unmanipulated Threshold:** The dashboard employs a mathematically neutral 50% decision boundary to definitively classify an asset's projected trajectory as either upward or downward.
+**Statistical Integrity:** By refusing to artificially scale, pad, or shift this threshold to make the model appear more confident, the UI reflects the exact, unvarnished mathematical reality of the algorithm.
+
+### 4. Volatility Optimization
+Cryptocurrency markets are notoriously noisy and volatile, requiring a model tuned specifically to handle asymmetrical financial risk:
+
+**F1-Score Calibration:** The underlying algorithm was explicitly optimized to achieve an F1-Score of 0.6533, deliberately prioritizing this balance over raw, often misleading baseline accuracy metrics.
+**Precision vs. Recall:** This rigorous calibration ensures the system is sensitive enough to capture early-stage upward momentum, while remaining mathematically strict enough to avoid overwhelming the user with false positive signals.
+
+---
 ## TokenTrend: Interactive Dashboard and Inference
 
 ### What the Dashboard Does
