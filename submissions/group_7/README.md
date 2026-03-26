@@ -68,3 +68,6 @@ The learned "intelligence" is compressed into a 100% portable data.json. This co
 
 ---
 # Screenshots
+![s1](images/s1.png)
+![s2](images/s2.png)
+![s3](images/s3.png)
