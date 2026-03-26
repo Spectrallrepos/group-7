@@ -1,6 +1,5 @@
 import { predict, symbolMap, getFeatureContributions } from './predict.js';
 
-const API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum";
 const API_KEY = "CG-QfzzKee6U8H41yNqvhsNuwnD";
 
 /** All the main stuff **/
