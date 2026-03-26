@@ -1,3 +1,16 @@
+# Team Members
+- Aarushi Ghosh
+- Gaurav Murugesan
+- Piyush Daga
+- Darla Navadeep - [Spectrallrepos](https://github.com/Spectrallrepos)
+- Nishant Jat -
+
+# Project links
+- PPT link: [ppt]
+- Hosted demo: [TokenTrend](https://tokentrendmu.vercel.app/)
+
+---
+# Technical Implementation
 ## ML Engine & Technical Implementation
 The backbone of TokenTrend is a universal predictive engine trained on 23 distinct crypto assets. Instead of a "one-size-fits-all" model, we built a pipeline that treats the market as a high-dimensional time-series problem.
 
@@ -25,3 +38,33 @@ We ran a competitive evaluation using TimeSeriesSplit (3-fold) to avoid data lea
 ### 4. Deployment (data.json)
 The learned "intelligence" is compressed into a 100% portable data.json. This contains scaling parameters, feature importances, and model weights, allowing the frontend to run instant inference without a live Python backend.
 
+---
+## TokenTrend: Interactive Dashboard and Inference
+
+### What the Dashboard Does
+- Shows a live market table for a curated set of tokens.
+- Lets users select tokens by table click, search, or random pick.
+- Displays a directional prediction card (UP or DOWN) with confidence intensity.
+- Breaks down the top feature contributions behind the current prediction.
+- Highlights quick market snapshots through top-token cards
+### Interactive Dashboard Features
+- Clickable market rows and top cards that trigger full prediction + chart refresh.
+- Random token button for fast exploration.
+- Dynamic color states
+
+## Technical Inferences
+- Inference is run directly in the browser using model parameters loaded from data.json.
+- Feature vectors are built from recent OHLC market history and Bitcoin context signals in predict.js.
+- Raw feature values are normalized with saved scaling parameters, then combined into a linear score and transformed into probability.
+- Probability is remapped around a model threshold into a user-friendly confidence scale.
+- Feature contribution values are exposed to the UI and ranked to show the strongest drivers of each prediction.
+### Data Sources and API Usage
+- CoinGecko:
+  Used for market list data (price, cap, volume, 24h change, rank).
+- CryptoCompare:
+  Used for OHLC history for trend charting and feature generation.
+### Caching strategy:
+- Market and OHLC responses are cached in localStorage with short TTL windows of 5min to reduce API calls and improve responsiveness.
+
+---
+# Screenshots
